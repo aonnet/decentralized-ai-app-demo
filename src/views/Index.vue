@@ -167,6 +167,7 @@ const formSubmit = async () => {
 		const ai_options = {
 			//Please replace with your own API key or jwt token.
 			auth: "Rbhpcp0FKNrYNA1nZkrwrIbD0YSSRlVG",
+			appid: ""
 			// host: "http://localhost:8080"
 		}
 
@@ -183,7 +184,10 @@ const formSubmit = async () => {
 				"instant_id_strength": 0.8
 			}
 		}
-		let response = await aonet.prediction("/predictions/ai/face-to-many", data)
+		console.log("formSubmit data", data)
+		let price = 12.5
+		let response = await aonet.prediction("/predictions/ai/face-to-many", data,price)
+		console.log("test", response)
 		if (response.task.exec_code == 200 && response.task.is_success) {
 			showLoading.value = false
 
