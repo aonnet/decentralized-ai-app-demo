@@ -75,7 +75,7 @@ import { ref, onMounted } from 'vue';
 import { showToast } from 'vant';
 import { useRouter } from 'vue-router'
 
-import { AI } from 'aonweb'
+import { AI,AIOptions} from 'aonweb'
 import { getTemplate } from '../lib/getTemplate'
 
 import 'vant/lib/index.css';
@@ -164,29 +164,32 @@ const formSubmit = async () => {
 	showLoading.value = true
 	try {
 		// AI 使用方法
-		const ai_options = {
-			//Please replace with your own API key or jwt token.
-			auth: "Rbhpcp0FKNrYNA1nZkrwrIbD0YSSRlVG",
-			appid: ""
-			// host: "http://localhost:8080"
-		}
+		const ai_options = new AIOptions({
+            appId :'test'
+        })
 
 		const aonet = new AI(ai_options)
 
 		const data = {
-			input: {
-				"image": submitImgUrl.value,
-				"style": "3D",
-				"prompt": prompt.value,
-				"negative_prompt": "",
-				"prompt_strength": 4.5,
-				"denoising_strength": 1,
-				"instant_id_strength": 0.8
+			input:{
+				"prompt": "",
+				"cfg_scale": 1.2,
+				"num_steps": 4,
+				"image_width": 768,
+				"num_samples": 1,
+				"image_height": 1024,
+				"output_format": "webp",
+				"identity_scale": 0.8,
+				"mix_identities": false,
+				"output_quality": 80,
+				"generation_mode": "fidelity",
+				"main_face_image": submitImgUrl.value,
+				"negative_prompt": ""
 			}
 		}
 		console.log("formSubmit data", data)
-		let price = 12.5
-		let response = await aonet.prediction("/predictions/ai/face-to-many", data,price)
+		let price = 10
+		let response = await aonet.prediction("/predictions/ai/pulid", data,price)
 		console.log("test", response)
 		if (response.task.exec_code == 200 && response.task.is_success) {
 			showLoading.value = false
