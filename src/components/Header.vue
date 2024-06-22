@@ -21,9 +21,9 @@ import {
 	computed
 } from 'vue';
 import { useRouter,useRoute } from 'vue-router'
-// import { User } from 'aonweb'
+import { User } from 'aonweb'
 
-// import eventBus from '../eventBus.js';
+import bus from '../eventBus.js';
 
 const router = useRouter()
 const route = useRoute()
@@ -53,19 +53,27 @@ const goUser = () => {
 };
 
 
-// const balance = async () => {
-// 	let user = new User()
-// 	let result = await user.balance()
-// 	if (result && result._balances && result._balances.length) {
-// 		balanceValue = result._balances[0]
-// 		balanceValue = balanceValue / 1000000000000000000n
-// 	}
-// };
+const balance = async () => {
+	console.log("balance in")
+	let user = new User()
+	let result = await user.balance()
+	console.log("Header balance ",result)
+	if (result && result._balances && result._balances.length) {
+		let temp = result._balances[0]
+		balanceValue.value = temp / 1000000000000000000n
+	}
+	console.log("Header balanceValue.value ",balanceValue.value)
+};
 
 // const handleBalance = (message) => {
 // 	console.log("handleBalance",message)
 // 	balance()
 // }
+
+bus.on('get_balance', (data) => {
+	console.log("get_balance",data)
+	balance()
+});
 
 const checkIfUserPage = () => {
 	isUserPage.value = route.path === '/user'

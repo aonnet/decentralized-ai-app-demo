@@ -43,7 +43,7 @@ import { Options, User } from 'aonweb'
 import { showToast } from 'vant';
 
 import Header from '../components/Header.vue';
-// import eventBus from '../eventBus.js';
+import bus from '../eventBus.js';
 
 
 
@@ -78,13 +78,23 @@ async function getAccount() {
 
 	//User 的使用方法
 	let user = new User()
-	await user.login((acc,userId,error) => {
-		console.log("getWeb3 account",account)
-		console.log("getWeb3 userId",userId)
-		console.log("getWeb3 error",error)
-		account.value = acc
-		// eventBus.config.globalProperties.$emit('balance');
-    })
+	if (!await user.islogin()) {
+		await user.login((acc,userId,error) => {
+			console.log("getWeb3 account",acc)
+			console.log("getWeb3 userId",userId)
+			console.log("getWeb3 error",error)
+			account.value = acc
+			bus.emit('get_balance',"login");
+			// eventBus.config.globalProperties.$emit('balance');
+		})
+	} else {
+		let ethereum = await detectEthereumProvider()
+		let get_account = await ethereum.request({ method: 'eth_requestAccounts' })
+		get_account = get_account[0]
+		account.value = get_account
+		bus.emit('get_balance',"login");
+	}
+	
 	// console.log("getWeb3 account", addr)
 	// account.value = addr[0]
 

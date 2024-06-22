@@ -75,12 +75,13 @@ import { ref, onMounted } from 'vue';
 import { showToast } from 'vant';
 import { useRouter } from 'vue-router'
 
-import { AI,AIOptions} from 'aonweb'
+import { AI,AIOptions,User} from 'aonweb'
 import { getTemplate } from '../lib/getTemplate'
 
 import 'vant/lib/index.css';
 import Header from '../components/Header.vue';
 import Loading from '../components/Loading.vue';
+import bus from '../eventBus.js';
 
 const router = useRouter()
 
@@ -191,6 +192,7 @@ const formSubmit = async () => {
 		let price = 10
 		let response = await aonet.prediction("/predictions/ai/pulid", data,price)
 		console.log("test", response)
+		bus.emit('get_balance',"prediction");
 		if (response && response.code == 200 && response.data) {
 			response = response.data
 		}
@@ -232,8 +234,27 @@ function selectTemplate(id, imageUrl, prompt_) {
 	prompt.value = prompt_
 }
 
+async function login() {
+	console.log('index login')
+	let user = new User()
+	let temp = await user.islogin()
+	if (!temp) {
+		console.log('index islogin')
+		await user.login((acc,userId,error) => {
+			console.log("getWeb3 account",acc)
+			console.log("getWeb3 userId",userId)
+			console.log("getWeb3 error",error)
+			bus.emit('get_balance',"login");
+			// eventBus.config.globalProperties.$emit('balance');
+		})
+	}
+	bus.emit('get_balance',"login");
+	console.log('index islogin sssss',temp)
+}
+
 onMounted(() => {
 	getTemplateList()
+	login()
 })
 
 </script>

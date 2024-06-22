@@ -1,3 +1,3 @@
-import { createApp } from 'vue';
-const eventBus = createApp({});
-export default eventBus;
+import mitt from 'mitt';
+const bus = mitt();
+export default bus;
