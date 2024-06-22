@@ -192,7 +192,6 @@ const formSubmit = async () => {
 		let price = 10
 		let response = await aonet.prediction("/predictions/ai/pulid", data,price)
 		console.log("test", response)
-		bus.emit('get_balance',"prediction");
 		if (response && response.code == 200 && response.data) {
 			response = response.data
 		}
@@ -245,7 +244,6 @@ async function login() {
 			console.log("getWeb3 userId",userId)
 			console.log("getWeb3 error",error)
 			bus.emit('get_balance',"login");
-			// eventBus.config.globalProperties.$emit('balance');
 		})
 	}
 	bus.emit('get_balance',"login");

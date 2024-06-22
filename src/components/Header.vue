@@ -65,11 +65,6 @@ const balance = async () => {
 	console.log("Header balanceValue.value ",balanceValue.value)
 };
 
-// const handleBalance = (message) => {
-// 	console.log("handleBalance",message)
-// 	balance()
-// }
-
 bus.on('get_balance', (data) => {
 	console.log("get_balance",data)
 	balance()
