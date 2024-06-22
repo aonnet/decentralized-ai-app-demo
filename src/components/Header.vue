@@ -64,6 +64,7 @@ const balance = async () => {
 			balanceValue.value = temp / 1000000000000000000n
 		}
 		console.log("Header balanceValue.value ", balanceValue.value)
+		localStorage.setItem("aon_balance",balanceValue.value)
 	} catch (error) {
 		console.log(error, "balance error")
 	}
@@ -82,8 +83,10 @@ const checkIfUserPage = () => {
 
 onMounted(() => {
 	checkIfUserPage();
+	let balance = localStorage.getItem("aon_balance")
+	balanceValue.value = balance
 	
-	balance()
+	// balance()
 });
 
 </script>

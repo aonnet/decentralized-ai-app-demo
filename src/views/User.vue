@@ -88,7 +88,7 @@ async function getAccount() {
 			let get_account = await ethereum.request({ method: 'eth_requestAccounts' })
 			get_account = get_account[0]
 			account.value = get_account
-			// bus.emit('get_balance', "login");
+			bus.emit('get_balance', "login");
 		}
 	} catch (error) {
 		console.log(error, "getAccount error")

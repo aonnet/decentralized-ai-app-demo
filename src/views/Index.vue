@@ -245,7 +245,7 @@ async function login() {
 		})
 		return
 	}
-	// bus.emit('get_balance',"login");
+	bus.emit('get_balance',"login");
 	console.log('index islogin sssss',temp)
 }
 
