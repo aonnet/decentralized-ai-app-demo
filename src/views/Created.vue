@@ -1,8 +1,5 @@
 <template>
 	<div class="">
-		<Header></Header>
-
-
 		<div class="container created">
 			<div class="resCon">
 				<img class="res_img" :src="imageUrl" mode=""></img>
@@ -26,8 +23,6 @@ import {
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
 import bus from '../eventBus.js';
-
-import Header from '../components/Header.vue';
 const router = useRouter()
 const route = useRoute()
 

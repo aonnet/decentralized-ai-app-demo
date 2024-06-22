@@ -1,6 +1,4 @@
 <template>
-	<Header></Header>
-
 	<div class="user">
 		<div class="container">
 			<div class="ava-con">
@@ -41,12 +39,8 @@ import {
 import { useRouter } from 'vue-router'
 import { Options, User } from 'aonweb'
 import { showToast } from 'vant';
-
-import Header from '../components/Header.vue';
+import detectEthereumProvider from '@metamask/detect-provider';
 import bus from '../eventBus.js';
-
-
-
 
 const router = useRouter()
 
@@ -76,25 +70,31 @@ function goToComplete() {
 // https://app.aonet.ai/kvapi
 async function getAccount() {
 
-	//User 的使用方法
-	let user = new User()
-	if (!await user.islogin()) {
-		await user.login((acc,userId,error) => {
-			console.log("getWeb3 account",acc)
-			console.log("getWeb3 userId",userId)
-			console.log("getWeb3 error",error)
-			account.value = acc
-			bus.emit('get_balance',"login");
-			// eventBus.config.globalProperties.$emit('balance');
-		})
-	} else {
-		let ethereum = await detectEthereumProvider()
-		let get_account = await ethereum.request({ method: 'eth_requestAccounts' })
-		get_account = get_account[0]
-		account.value = get_account
-		bus.emit('get_balance',"login");
+	try {
+		//User 的使用方法
+		let user = new User()
+		const isLogin_status = await user.islogin()
+		console.log(isLogin_status, 'isLogin_status')
+		if (!isLogin_status) {
+			await user.login((acc, userId, error) => {
+				console.log("getWeb3 account", acc)
+				console.log("getWeb3 userId", userId)
+				console.log("getWeb3 error", error)
+				account.value = acc
+				bus.emit('get_balance', "login");
+				// eventBus.config.globalProperties.$emit('balance');
+			})
+		} else {
+			let ethereum = await detectEthereumProvider()
+			let get_account = await ethereum.request({ method: 'eth_requestAccounts' })
+			get_account = get_account[0]
+			account.value = get_account
+			bus.emit('get_balance', "login");
+		}
+	} catch (error) {
+		console.log(error, "getAccount error")
 	}
-	
+
 	// console.log("getWeb3 account", addr)
 	// account.value = addr[0]
 

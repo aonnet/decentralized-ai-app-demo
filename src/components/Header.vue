@@ -6,7 +6,7 @@
 		<div class="right">
 			<div class="right_count">
 				<img src="../assets/icons/money.png" class="moneyIcon"></img>
-				<span class="count">{{balanceValue}}</span>
+				<span class="count">{{ balanceValue }}</span>
 			</div>
 			<img src="../assets/icons/user.png" v-if="!isUserPage" class="userIcon" @click="goUser"></img>
 		</div>
@@ -16,11 +16,11 @@
 <script setup>
 import {
 	defineProps,
-	ref, 
+	ref,
 	onMounted,
 	computed
 } from 'vue';
-import { useRouter,useRoute } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { User } from 'aonweb'
 
 import bus from '../eventBus.js';
@@ -54,21 +54,23 @@ const goUser = () => {
 
 
 const balance = async () => {
-	console.log("balance in")
-	let user = new User()
-	let result = await user.balance()
-	console.log("Header balance ",result)
-	if (result && result._balances && result._balances.length) {
-		let temp = result._balances[0]
-		balanceValue.value = temp / 1000000000000000000n
+	// console.log("balance in----")
+	try {
+		let user = new User()
+		let result = await user.balance()
+		console.log("Header balance ", result)
+		if (result && result._balances && result._balances.length) {
+			let temp = result._balances[0]
+			balanceValue.value = temp / 1000000000000000000n
+		}
+		console.log("Header balanceValue.value ", balanceValue.value)
+	} catch (error) {
+		console.log(error, "balance error")
 	}
-	console.log("Header balanceValue.value ",balanceValue.value)
+
 };
 
-bus.on('get_balance', (data) => {
-	console.log("get_balance",data)
-	balance()
-});
+
 
 const checkIfUserPage = () => {
 	isUserPage.value = route.path === '/user'
@@ -76,9 +78,10 @@ const checkIfUserPage = () => {
 
 onMounted(() => {
 	checkIfUserPage();
-	// eventBus.config.globalProperties.$on('balance', (data) => {
-    // 	handleBalance()
-    // });
+	bus.on('get_balance', (data) => {
+		console.log("get_balance", data)
+		balance()
+	});
 });
 
 </script>

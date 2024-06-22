@@ -1,7 +1,4 @@
 <template>
-	<Header></Header>
-
-
 	<div class="user">
 
 		<div class="container complete">
@@ -28,10 +25,7 @@ import {
 	ref,
 } from 'vue';
 import { useRoute,useRouter } from 'vue-router'
-
-import Header from '../components/Header.vue';
 const router = useRouter()
-
 
 const goBack = () => {
 	router.back();

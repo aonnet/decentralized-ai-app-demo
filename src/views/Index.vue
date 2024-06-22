@@ -1,5 +1,4 @@
 <template>
-	<Header></Header>
 	<Loading :showLoading="showLoading" />
 	<div>
 		<!-- 页面内容 -->
@@ -79,7 +78,6 @@ import { AI,AIOptions,User} from 'aonweb'
 import { getTemplate } from '../lib/getTemplate'
 
 import 'vant/lib/index.css';
-import Header from '../components/Header.vue';
 import Loading from '../components/Loading.vue';
 import bus from '../eventBus.js';
 
