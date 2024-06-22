@@ -237,14 +237,15 @@ async function login() {
 	let temp = await user.islogin()
 	if (!temp) {
 		console.log('index islogin')
-		await user.login((acc,userId,error) => {
+		user.login((acc,userId,error) => {
 			console.log("getWeb3 account",acc)
 			console.log("getWeb3 userId",userId)
 			console.log("getWeb3 error",error)
 			bus.emit('get_balance',"login");
 		})
+		return
 	}
-	bus.emit('get_balance',"login");
+	// bus.emit('get_balance',"login");
 	console.log('index islogin sssss',temp)
 }
 

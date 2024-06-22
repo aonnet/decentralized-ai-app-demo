@@ -71,6 +71,10 @@ const balance = async () => {
 };
 
 
+bus.on('get_balance', (data) => {
+	console.log("get_balance", data)
+	balance()
+});
 
 const checkIfUserPage = () => {
 	isUserPage.value = route.path === '/user'
@@ -78,10 +82,8 @@ const checkIfUserPage = () => {
 
 onMounted(() => {
 	checkIfUserPage();
-	bus.on('get_balance', (data) => {
-		console.log("get_balance", data)
-		balance()
-	});
+	
+	balance()
 });
 
 </script>

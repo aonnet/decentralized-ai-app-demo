@@ -37,7 +37,7 @@ import {
 	onMounted
 } from 'vue';
 import { useRouter } from 'vue-router'
-import { Options, User } from 'aonweb'
+import { Options, User ,detectEthereumProvider} from 'aonweb'
 import { showToast } from 'vant';
 import bus from '../eventBus.js';
 
@@ -75,7 +75,7 @@ async function getAccount() {
 		const isLogin_status = await user.islogin()
 		console.log(isLogin_status, 'isLogin_status')
 		if (!isLogin_status) {
-			await user.login((acc, userId, error) => {
+			user.login((acc, userId, error) => {
 				console.log("getWeb3 account", acc)
 				console.log("getWeb3 userId", userId)
 				console.log("getWeb3 error", error)
@@ -88,7 +88,7 @@ async function getAccount() {
 			let get_account = await ethereum.request({ method: 'eth_requestAccounts' })
 			get_account = get_account[0]
 			account.value = get_account
-			bus.emit('get_balance', "login");
+			// bus.emit('get_balance', "login");
 		}
 	} catch (error) {
 		console.log(error, "getAccount error")
