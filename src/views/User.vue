@@ -43,6 +43,8 @@ import { Options, User } from 'aonweb'
 import { showToast } from 'vant';
 
 import Header from '../components/Header.vue';
+// import eventBus from '../eventBus.js';
+
 
 
 
@@ -76,9 +78,15 @@ async function getAccount() {
 
 	//User 的使用方法
 	let user = new User()
-	let addr = await user.login()
-	console.log("getWeb3 account", addr)
-	account.value = addr[0]
+	await user.login((acc,userId,error) => {
+		console.log("getWeb3 account",account)
+		console.log("getWeb3 userId",userId)
+		console.log("getWeb3 error",error)
+		account.value = acc
+		// eventBus.config.globalProperties.$emit('balance');
+    })
+	// console.log("getWeb3 account", addr)
+	// account.value = addr[0]
 
 
 	// //detectEthereumProvider 的使用方法

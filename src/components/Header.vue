@@ -6,7 +6,7 @@
 		<div class="right">
 			<div class="right_count">
 				<img src="../assets/icons/money.png" class="moneyIcon"></img>
-				<span class="count">120</span>
+				<span class="count">{{balanceValue}}</span>
 			</div>
 			<img src="../assets/icons/user.png" v-if="!isUserPage" class="userIcon" @click="goUser"></img>
 		</div>
@@ -21,10 +21,15 @@ import {
 	computed
 } from 'vue';
 import { useRouter,useRoute } from 'vue-router'
+// import { User } from 'aonweb'
+
+// import eventBus from '../eventBus.js';
 
 const router = useRouter()
 const route = useRoute()
 const isUserPage = ref(false);
+
+const balanceValue = ref(0);
 
 
 const props = defineProps({
@@ -46,13 +51,33 @@ const goIndex = () => {
 const goUser = () => {
 	router.push('/user')
 };
+
+
+// const balance = async () => {
+// 	let user = new User()
+// 	let result = await user.balance()
+// 	if (result && result._balances && result._balances.length) {
+// 		balanceValue = result._balances[0]
+// 		balanceValue = balanceValue / 1000000000000000000n
+// 	}
+// };
+
+// const handleBalance = (message) => {
+// 	console.log("handleBalance",message)
+// 	balance()
+// }
+
 const checkIfUserPage = () => {
 	isUserPage.value = route.path === '/user'
 };
 
 onMounted(() => {
 	checkIfUserPage();
+	// eventBus.config.globalProperties.$on('balance', (data) => {
+    // 	handleBalance()
+    // });
 });
+
 </script>
 
 <style scoped>

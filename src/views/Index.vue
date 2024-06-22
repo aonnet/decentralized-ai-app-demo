@@ -165,7 +165,7 @@ const formSubmit = async () => {
 	try {
 		// AI 使用方法
 		const ai_options = new AIOptions({
-            appId :'test'
+            appId :'k3ebyfaSz8b87xJb_VyEGXx_AJ0MM8ngqU7Ym3AKeW8A'
         })
 
 		const aonet = new AI(ai_options)
@@ -191,6 +191,9 @@ const formSubmit = async () => {
 		let price = 10
 		let response = await aonet.prediction("/predictions/ai/pulid", data,price)
 		console.log("test", response)
+		if (response && response.code == 200 && response.data) {
+			response = response.data
+		}
 		if (response.task.exec_code == 200 && response.task.is_success) {
 			showLoading.value = false
 
