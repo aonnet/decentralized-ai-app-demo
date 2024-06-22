@@ -39,7 +39,6 @@ import {
 import { useRouter } from 'vue-router'
 import { Options, User } from 'aonweb'
 import { showToast } from 'vant';
-import detectEthereumProvider from '@metamask/detect-provider';
 import bus from '../eventBus.js';
 
 const router = useRouter()
