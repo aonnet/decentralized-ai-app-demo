@@ -25,6 +25,7 @@ import {
 	onMounted
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
+import bus from '../eventBus.js';
 
 import Header from '../components/Header.vue';
 const router = useRouter()
@@ -37,6 +38,9 @@ function goToCreate() {
 		path: '/'
 	})
 }
+
+
+
 
 async function downloadImage() {
 	if (!imageUrl.value) return;
@@ -63,6 +67,7 @@ async function downloadImage() {
 
 onMounted(() => {
 	imageUrl.value = route.query.url;
+	bus.emit('get_balance',"prediction");
 })
 </script>
 
