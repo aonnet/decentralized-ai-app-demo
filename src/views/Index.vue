@@ -187,7 +187,7 @@ const formSubmit = async () => {
 			}
 		}
 		console.log("formSubmit data", data)
-		let price = 10
+		let price = 8
 		let response = await aonet.prediction("/predictions/ai/pulid", data,price)
 		console.log("test", response)
 		if (response && response.code == 200 && response.data) {
