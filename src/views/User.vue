@@ -80,6 +80,7 @@ async function getAccount() {
 		console.log(isLogin_status, 'isLogin_status')
 		if (!isLogin_status) {
 			user.login((acc, userId, error) => {
+				closeToast()
 				console.log("getWeb3 account", acc)
 				console.log("getWeb3 userId", userId)
 				console.log("getWeb3 error", error)
@@ -95,14 +96,15 @@ async function getAccount() {
 			bus.emit('get_balance', "login");
 		}
 	} catch (error) {
+		closeToast()
+
 		console.log(error, "getAccount error")
-		if (error && typeof error == 'string'){
+		if (error && typeof error == 'string') {
 			showToast(error);
 		} else {
 			showToast(error.message);
 		}
 	} finally {
-		closeToast()
 	}
 
 	// console.log("getWeb3 account", addr)

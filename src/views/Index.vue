@@ -210,12 +210,16 @@ const formSubmit = async () => {
 			goToComplete(url)
 		} else {
 			showLoading.value = false
-			showToast('AI processing failed')
+			let task_error = response && response.task && response.task.task_error
+			let api_error = response && response.task && response.task.api_error
+			let message = response && response.message
+			let msg = task_error || api_error || message
+			showToast(msg || 'AI processing failed')
 		}
 	} catch (error) {
 		showLoading.value = false
 		// showToast('AI processing failed')
-		if (error && typeof error == 'string'){
+		if (error && typeof error == 'string') {
 			showToast(error);
 		} else {
 			showToast(error.message);
@@ -249,19 +253,20 @@ async function login() {
 			message: 'Loading...',
 		});
 		console.log(`demo index login after showLoadingToast time = ${new Date().getTime() - time}`)
-		
+
 		let user = new User()
 		let temp = await user.islogin()
 		console.log(`demo index islogin res time = ${new Date().getTime() - time}`)
 		if (!temp) {
 			console.log(`demo index before login time = ${new Date().getTime() - time}`)
 			user.login((acc, userId, error) => {
+				closeToast();
 				console.log(`demo index login res time = ${new Date().getTime() - time}`)
 				console.log("getWeb3 account", acc)
 				console.log("getWeb3 userId", userId)
 				console.log("getWeb3 error", error)
 				if (error) {
-					if (error && typeof error == 'string'){
+					if (error && typeof error == 'string') {
 						showToast(error);
 					} else {
 						showToast(error.message);
@@ -275,14 +280,14 @@ async function login() {
 		}
 		bus.emit('get_balance', "login");
 	} catch (error) {
-		console.log("index demo error",error)
-		if (error && typeof error == 'string'){
+		console.log("index demo error", error)
+		closeToast();
+		if (error && typeof error == 'string') {
 			showToast(error);
 		} else {
 			showToast(error.message);
 		}
 	} finally {
-		closeToast();
 	}
 
 }
