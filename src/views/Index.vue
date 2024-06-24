@@ -236,25 +236,31 @@ function selectTemplate(id, imageUrl, prompt_) {
 
 async function login() {
 	try {
+		let time = new Date().getTime()
+		console.log(`demo index login in time = ${time}`)
 		showLoadingToast({
 			duration: 0,
 			forbidClick: true,
 			message: 'Loading...',
 		});
+		console.log(`demo index login after showLoadingToast time = ${new Date().getTime() - time}`)
+		
 		let user = new User()
 		let temp = await user.islogin()
+		console.log(`demo index islogin res time = ${new Date().getTime() - time}`)
 		if (!temp) {
-			console.log('index islogin')
+			console.log(`demo index before login time = ${new Date().getTime() - time}`)
 			user.login((acc, userId, error) => {
+				console.log(`demo index login res time = ${new Date().getTime() - time}`)
 				console.log("getWeb3 account", acc)
 				console.log("getWeb3 userId", userId)
 				console.log("getWeb3 error", error)
 				bus.emit('get_balance', "login");
 			})
+			console.log(`demo index after login time = ${new Date().getTime() - time}`)
 			return
 		}
 		bus.emit('get_balance', "login");
-		console.log('index islogin sssss', temp)
 	} catch (error) {
 
 	} finally {
