@@ -24,6 +24,8 @@ import { useRouter, useRoute } from 'vue-router'
 import { User } from 'aonweb'
 
 import bus from '../eventBus.js';
+import { showToast, showLoadingToast, closeToast } from 'vant';
+
 
 const router = useRouter()
 const route = useRoute()
@@ -58,15 +60,22 @@ const balance = async () => {
 	try {
 		let user = new User()
 		let result = await user.balance()
-		console.log("Header balance ", result)
+		// console.log("Header balance ", result)
 		if (result && result._balances && result._balances.length) {
 			let temp = result._balances[0]
 			balanceValue.value = temp / 1000000000000000000n
 		}
-		console.log("Header balanceValue.value ", balanceValue.value)
+		// console.log("Header balanceValue.value ", balanceValue.value)
 		localStorage.setItem("aon_balance",balanceValue.value)
 	} catch (error) {
 		console.log(error, "balance error")
+		// if (error && typeof error == 'string'){
+		// 	showToast(error);
+		// } else {
+		// 	showToast(error.message);
+		// }
+	} finally {
+		closeToast();
 	}
 
 };

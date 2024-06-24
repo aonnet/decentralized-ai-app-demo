@@ -96,6 +96,11 @@ async function getAccount() {
 		}
 	} catch (error) {
 		console.log(error, "getAccount error")
+		if (error && typeof error == 'string'){
+			showToast(error);
+		} else {
+			showToast(error.message);
+		}
 	} finally {
 		closeToast()
 	}

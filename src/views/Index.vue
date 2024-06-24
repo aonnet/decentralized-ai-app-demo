@@ -214,7 +214,12 @@ const formSubmit = async () => {
 		}
 	} catch (error) {
 		showLoading.value = false
-		showToast('AI processing failed')
+		// showToast('AI processing failed')
+		if (error && typeof error == 'string'){
+			showToast(error);
+		} else {
+			showToast(error.message);
+		}
 	}
 
 }
@@ -262,7 +267,11 @@ async function login() {
 		}
 		bus.emit('get_balance', "login");
 	} catch (error) {
-
+		if (error && typeof error == 'string'){
+			showToast(error);
+		} else {
+			showToast(error.message);
+		}
 	} finally {
 		closeToast();
 	}
