@@ -37,8 +37,8 @@ import {
 	onMounted
 } from 'vue';
 import { useRouter } from 'vue-router'
-import { Options, User ,detectEthereumProvider} from 'aonweb'
-import { showToast } from 'vant';
+import { Options, User, detectEthereumProvider } from 'aonweb'
+import { showToast, showLoadingToast, closeToast } from 'vant';
 import bus from '../eventBus.js';
 
 const router = useRouter()
@@ -68,8 +68,12 @@ function goToComplete() {
 // https://app.aonet.ai/api
 // https://app.aonet.ai/kvapi
 async function getAccount() {
-
 	try {
+		showLoadingToast({
+			duration: 0,
+			forbidClick: true,
+			message: 'Loading...',
+		});
 		//User 的使用方法
 		let user = new User()
 		const isLogin_status = await user.islogin()
@@ -92,6 +96,8 @@ async function getAccount() {
 		}
 	} catch (error) {
 		console.log(error, "getAccount error")
+	} finally {
+		closeToast()
 	}
 
 	// console.log("getWeb3 account", addr)

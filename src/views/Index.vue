@@ -1,5 +1,5 @@
 <template>
-	<Loading :showLoading="showLoading" />
+	<Loading v-if="showLoading" :showLoading="showLoading" />
 	<div>
 		<!-- 页面内容 -->
 		<div class="container">
@@ -12,8 +12,8 @@
 				<div class="title">Upload your photos</div>
 
 				<div class="content">
-					<div class="upload upload-done" v-if="imgUrl">
-						<img class="upload-res" :src="imgUrl" mode=""></img>
+					<div class="upload upload-done" v-if="imageStore.uploadedImageUrl">
+						<img class="upload-res" :src="imageStore.uploadedImageUrl" mode=""></img>
 						<img class="deleteIcon" @click="deleteImg" src="../assets/icons/delete.png" mode=""></img>
 					</div>
 					<van-uploader v-else style="width: 100%" :max-size="maxSize" @oversize="onOversize"
@@ -71,27 +71,29 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { showToast } from 'vant';
+import { showToast, showLoadingToast, closeToast } from 'vant';
 import { useRouter } from 'vue-router'
 
-import { AI,AIOptions,User} from 'aonweb'
+import { AI, AIOptions, User } from 'aonweb'
 import { getTemplate } from '../lib/getTemplate'
+import { useImageStore } from '@/store/imageStore';
 
 import 'vant/lib/index.css';
 import Loading from '../components/Loading.vue';
 import bus from '../eventBus.js';
 
 const router = useRouter()
+const imageStore = useImageStore();
 
 const showLoading = ref(false);
 const showError = ref(false);
 const prompt = ref('');
-const imgUrl = ref('');
-const submitImgUrl = ref('');
 const templateList = ref([]);
 const templateId = ref(1);
 
+
 const maxSize = 30 * 1024 * 1024;
+
 function goToComplete(url) {
 	const query = { url: url }
 	router.push({
@@ -111,16 +113,12 @@ function afterRead(file) {
 	// 调用上传接口
 	uploadFile(formData).then(res => {
 		if (res.code == 200 && res.data && res.data.length) {
-			submitImgUrl.value = res.data
+			imageStore.addImage(res.data);
 		}
-
 	}).catch(err => {
 		showToast('image upload failed');
 		console.log(err);
 	});
-
-	imgUrl.value = URL.createObjectURL(file.file);
-
 }
 // 上传接口
 const uploadFile = async (formData) => {
@@ -134,14 +132,14 @@ const uploadFile = async (formData) => {
 };
 
 function deleteImg() {
-	if (imgUrl.value) {
+	if (imageStore.uploadedImageUrl) {
 		const formData = new FormData();
-		formData.append('file', imgUrl.value);
+		formData.append('file', imageStore.uploadedImageUrl);
 
 		// 删除文件
 		formData.delete('file');
-		imgUrl.value = null;
-		submitImgUrl.value = null
+
+		imageStore.removeImage();
 
 		console.log('File deleted:', formData.get('file'));
 	} else {
@@ -150,9 +148,14 @@ function deleteImg() {
 }
 
 
+
+
+
+
+
 const formSubmit = async () => {
-	console.log(prompt.value, submitImgUrl.value)
-	if (!imgUrl.value || !submitImgUrl.value) {
+	console.log(imageStore.uploadedImageUrl)
+	if (!imageStore.uploadedImageUrl) {
 		showError.value = true
 
 		setTimeout(() => {
@@ -164,13 +167,13 @@ const formSubmit = async () => {
 	try {
 		// AI 使用方法
 		const ai_options = new AIOptions({
-            appId :'k3ebyfaSz8b87xJb_VyEGXx_AJ0MM8ngqU7Ym3AKeW8A'
-        })
+			appId: 'k3ebyfaSz8b87xJb_VyEGXx_AJ0MM8ngqU7Ym3AKeW8A'
+		})
 
 		const aonet = new AI(ai_options)
 
 		const data = {
-			input:{
+			input: {
 				"prompt": "",
 				"cfg_scale": 1.2,
 				"num_steps": 4,
@@ -182,13 +185,13 @@ const formSubmit = async () => {
 				"mix_identities": false,
 				"output_quality": 80,
 				"generation_mode": "fidelity",
-				"main_face_image": submitImgUrl.value,
+				"main_face_image": imageStore.uploadedImageUrl,
 				"negative_prompt": ""
 			}
 		}
 		console.log("formSubmit data", data)
 		let price = 8
-		let response = await aonet.prediction("/predictions/ai/pulid", data,price)
+		let response = await aonet.prediction("/predictions/ai/pulid", data, price)
 		console.log("test", response)
 		if (response && response.code == 200 && response.data) {
 			response = response.data
@@ -232,21 +235,32 @@ function selectTemplate(id, imageUrl, prompt_) {
 }
 
 async function login() {
-	console.log('index login')
-	let user = new User()
-	let temp = await user.islogin()
-	if (!temp) {
-		console.log('index islogin')
-		user.login((acc,userId,error) => {
-			console.log("getWeb3 account",acc)
-			console.log("getWeb3 userId",userId)
-			console.log("getWeb3 error",error)
-			bus.emit('get_balance',"login");
-		})
-		return
+	try {
+		showLoadingToast({
+			duration: 0,
+			forbidClick: true,
+			message: 'Loading...',
+		});
+		let user = new User()
+		let temp = await user.islogin()
+		if (!temp) {
+			console.log('index islogin')
+			user.login((acc, userId, error) => {
+				console.log("getWeb3 account", acc)
+				console.log("getWeb3 userId", userId)
+				console.log("getWeb3 error", error)
+				bus.emit('get_balance', "login");
+			})
+			return
+		}
+		bus.emit('get_balance', "login");
+		console.log('index islogin sssss', temp)
+	} catch (error) {
+
+	} finally {
+		closeToast();
 	}
-	bus.emit('get_balance',"login");
-	console.log('index islogin sssss',temp)
+
 }
 
 onMounted(() => {
@@ -324,12 +338,14 @@ onMounted(() => {
 	box-sizing: border-box;
 
 }
-.error-text{
+
+.error-text {
 	width: 86.67vw;
 	position: fixed;
 	bottom: 21.6vw;
-	
+
 }
+
 .error-text .content {
 	background-color: #F3A32B;
 	font-size: 3.2vw;
@@ -461,12 +477,12 @@ onMounted(() => {
 	align-items: center;
 }
 
-.isActiveIcon img{
+.isActiveIcon img {
 	height: 2.13vw;
 	width: 2.13vw;
 }
 
-.active{
+.active {
 	background: #EBCC2F;
 }
 </style>

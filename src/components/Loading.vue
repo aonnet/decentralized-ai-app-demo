@@ -3,25 +3,61 @@
 		<div class="running-con">
 			<img src="../assets/images/running.gif" mode=""></img>
 			<p>RUNNING...</p>
+			<p>ETA: {{ formatTime(timeLeft) }}</p>
+
 		</div>
 	</div>
 </template>
 
 <script setup>
-	import {
-		defineProps,
-		defineEmits
-	} from 'vue';
-	const props = defineProps({
-		showLoading: {
-			type: Boolean,
-			default: false
+import { ref, onMounted, onUnmounted } from 'vue';
+
+const props = defineProps({
+	showLoading: {
+		type: Boolean,
+		default: false
+	}
+});
+
+const timeLeft = ref(30);
+let timer;
+
+const startCountdown = () => {
+	timer = setInterval(() => {
+		if (timeLeft.value > 0) {
+			timeLeft.value--;
+		} else {
+			clearInterval(timer);
 		}
-	});
+	}, 1000);
+};
+
+const formatTime = (seconds) => {
+	const hours = Math.floor(seconds / 3600);
+	const minutes = Math.floor((seconds % 3600) / 60);
+	const secs = seconds % 60;
+	return `${padZero(hours)}:${padZero(minutes)}:${padZero(secs)}`;
+};
+
+const padZero = (num) => {
+	return num.toString().padStart(2, '0');
+};
+
+
+onMounted(() => {
+	startCountdown()
+})
+
+onUnmounted(() => {
+	clearInterval(timer);
+})
+
+
+
 </script>
 
 <style>
-.loading{
+.loading {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -35,21 +71,22 @@
 	align-items: center;
 }
 
-.running-con{
+.running-con {
 	width: 56vw;
 	height: 25.07vw;
 	background: #000000;
 	border-radius: 4.27vw;
 	border: .13vw solid #707070;
 	display: flex;
-	justify-content: center;
-	align-items: flex-end;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-items: center;
 	position: relative;
 	padding: 5.6vw 0;
 	box-sizing: border-box;
 }
 
-.running-con img{
+.running-con img {
 	width: 22.4vw;
 	height: 38.4vw;
 	position: absolute;
@@ -58,7 +95,7 @@
 	top: -28vw;
 }
 
-.running-con p{
+.running-con p {
 	font-family: Roboto-Bold;
 	font-weight: bold;
 	font-size: 3.73vw;
@@ -66,6 +103,7 @@
 	text-align: center;
 	font-style: normal;
 	text-transform: none;
+	display: flex;
 	/* margin-top: 32rpx; */
 }
 </style>
