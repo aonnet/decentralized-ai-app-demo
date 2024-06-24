@@ -260,6 +260,14 @@ async function login() {
 				console.log("getWeb3 account", acc)
 				console.log("getWeb3 userId", userId)
 				console.log("getWeb3 error", error)
+				if (error) {
+					if (error && typeof error == 'string'){
+						showToast(error);
+					} else {
+						showToast(error.message);
+					}
+					return
+				}
 				bus.emit('get_balance', "login");
 			})
 			console.log(`demo index after login time = ${new Date().getTime() - time}`)
@@ -267,6 +275,7 @@ async function login() {
 		}
 		bus.emit('get_balance', "login");
 	} catch (error) {
+		console.log("index demo error",error)
 		if (error && typeof error == 'string'){
 			showToast(error);
 		} else {
