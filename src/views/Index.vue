@@ -293,6 +293,13 @@ async function login() {
 }
 
 onMounted(() => {
+	let fingerprint = localStorage.removeItem("aon_fingerprint")
+	if (fingerprint && window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+		console.log("onMounted")
+		localStorage.removeItem("aon_logedUserId")
+		localStorage.removeItem("aon_fingerprint")
+		localStorage.removeItem("token")
+	}
 	getTemplateList()
 	login()
 })
