@@ -293,21 +293,21 @@ async function login() {
 }
 
 onMounted(() => {
-	let fingerprint = localStorage.removeItem("aon_fingerprint")
-	let userId = localStorage.removeItem("aon_logedUserId")
+	// let fingerprint = localStorage.getItem("aon_fingerprint")
+	// let userId = localStorage.removeItem("aon_logedUserId")
 
-	if (fingerprint && window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
-		console.log("onMounted")
-		localStorage.removeItem("aon_logedUserId")
-		localStorage.removeItem("aon_fingerprint")
-		localStorage.removeItem("token")
-	}
-	if (userId && !fingerprint && !(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData)) {
-		console.log("onMounted")
-		localStorage.removeItem("aon_logedUserId")
-		localStorage.removeItem("aon_fingerprint")
-		localStorage.removeItem("token")
-	}
+	// if (fingerprint && window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+	// 	console.log("onMounted")
+	// 	localStorage.removeItem("aon_logedUserId")
+	// 	localStorage.removeItem("aon_fingerprint")
+	// 	localStorage.removeItem("token")
+	// }
+	// if (userId && !fingerprint && !(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData)) {
+	// 	console.log("onMounted")
+	// 	localStorage.removeItem("aon_logedUserId")
+	// 	localStorage.removeItem("aon_fingerprint")
+	// 	localStorage.removeItem("token")
+	// }
 	getTemplateList()
 	login()
 })
