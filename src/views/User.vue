@@ -69,16 +69,16 @@ function goToComplete() {
 // https://app.aonet.ai/kvapi
 async function getAccount() {
 	try {
-		showLoadingToast({
-			duration: 0,
-			forbidClick: true,
-			message: 'Loading...',
-		});
 		//User 的使用方法
 		let user = new User()
 		const isLogin_status = await user.islogin()
 		console.log(isLogin_status, 'isLogin_status')
 		if (!isLogin_status) {
+			showLoadingToast({
+				duration: 0,
+				forbidClick: true,
+				message: 'Loading...',
+			});
 			user.login((acc, userId, error) => {
 				closeToast()
 				console.log("getWeb3 account", acc)
@@ -150,8 +150,59 @@ async function getAccount() {
 	// console.log("test", response)
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function login() {
+	try {
+		let time = new Date().getTime()
+		console.log(`demo user login start time = ${time}`)
+		let user = new User()
+		let temp = await user.islogin()
+		if (!temp) {
+			showLoadingToast({
+				duration: 0,
+				forbidClick: true,
+				message: 'Loading...',
+			});
+			for (let i = 0; i < 5; i++) {
+			// console.log("getOwnedUsers i = ",i)
+				let result = await user.getOwnedUsers()
+				let userid = result && result._userIds && result._userIds.length && result._userIds[0]
+				if (userid && userid.length) {
+					break
+				}
+				await sleep(300)       
+			}
+			closeToast();
+			temp = await user.islogin()
+			if (!temp) {
+				showToast("login failed,please try again later");
+				return
+			}
+		}
+		let ethereum = await detectEthereumProvider()
+		let get_account = await ethereum.request({ method: 'eth_requestAccounts' })
+		get_account = get_account[0]
+		account.value = get_account
+		bus.emit('get_balance', "login");
+		console.log(`demo user login end time = ${new Date().getTime() - time}`)
+	} catch (error) {
+		console.log("index demo error", error)
+		closeToast();
+		if (error && typeof error == 'string') {
+			showToast(error);
+		} else {
+			showToast(error.message);
+		}
+	} finally {
+	}
+}
+
 onMounted(() => {
-	getAccount()
+	// getAccount()
+	login()
 })
 
 </script>

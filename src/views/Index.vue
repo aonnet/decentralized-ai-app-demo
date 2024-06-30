@@ -243,21 +243,21 @@ function selectTemplate(id, imageUrl, prompt_) {
 	prompt.value = prompt_
 }
 
-async function login() {
+async function login_108() {
 	try {
 		let time = new Date().getTime()
 		console.log(`demo index login in time = ${time}`)
-		showLoadingToast({
-			duration: 0,
-			forbidClick: true,
-			message: 'Loading...',
-		});
-		console.log(`demo index login after showLoadingToast time = ${new Date().getTime() - time}`)
-
+		
 		let user = new User()
 		let temp = await user.islogin()
 		console.log(`demo index islogin res time = ${new Date().getTime() - time}`)
 		if (!temp) {
+			showLoadingToast({
+				duration: 0,
+				forbidClick: true,
+				message: 'Loading...',
+			});
+
 			console.log(`demo index before login time = ${new Date().getTime() - time}`)
 			user.login((acc, userId, error) => {
 				closeToast();
@@ -292,24 +292,59 @@ async function login() {
 
 }
 
-onMounted(() => {
-	// let fingerprint = localStorage.getItem("aon_fingerprint")
-	// let userId = localStorage.removeItem("aon_logedUserId")
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-	// if (fingerprint && window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
-	// 	console.log("onMounted")
-	// 	localStorage.removeItem("aon_logedUserId")
-	// 	localStorage.removeItem("aon_fingerprint")
-	// 	localStorage.removeItem("token")
-	// }
-	// if (userId && !fingerprint && !(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData)) {
-	// 	console.log("onMounted")
-	// 	localStorage.removeItem("aon_logedUserId")
-	// 	localStorage.removeItem("aon_fingerprint")
-	// 	localStorage.removeItem("token")
-	// }
+async function login_1012() {
+	try {
+		let time = new Date().getTime()
+		console.log(`demo index login start time = ${time}`)
+		let user = new User()
+		let temp = await user.islogin()
+		console.log(`demo index islogin end time = ${time}, temp = ${temp}`)
+		if (!temp) {
+			showLoadingToast({
+				duration: 0,
+				forbidClick: true,
+				message: 'Loading...',
+			});
+			console.log(`demo index showLoadingToast end time = ${time}`)
+			for (let i = 0; i < 5; i++) {
+			// console.log("getOwnedUsers i = ",i)
+				let result = await user.getOwnedUsers()
+				let userid = result && result._userIds && result._userIds.length && result._userIds[0]
+				if (userid && userid.length) {
+					break
+				}
+				await sleep(300)       
+			}
+			closeToast();
+			temp = await user.islogin()
+			if (!temp) {
+				showToast("login failed,please try again later");
+				return
+			}
+		}
+		bus.emit('get_balance', "login");
+		console.log(`demo index login end time = ${new Date().getTime() - time}`)
+	} catch (error) {
+		console.log("index demo error", error)
+		closeToast();
+		if (error && typeof error == 'string') {
+			showToast(error);
+		} else {
+			showToast(error.message);
+		}
+	} finally {
+	}
+}
+
+
+onMounted(() => {
 	getTemplateList()
-	login()
+	// login_108()
+	login_1012()
 })
 
 </script>

@@ -67,7 +67,7 @@ const balance = async () => {
 		}
 		// console.log("Header balanceValue.value ", balanceValue.value)
 		localStorage.setItem("aon_balance",balanceValue.value)
-		closeToast();
+		// closeToast();
 	} catch (error) {
 		console.log(error, "balance error")
 		if (error && typeof error == 'string'){
