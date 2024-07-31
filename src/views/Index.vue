@@ -147,12 +147,6 @@ function deleteImg() {
 	}
 }
 
-
-
-
-
-
-
 const formSubmit = async () => {
 	console.log(imageStore.uploadedImageUrl)
 	if (!imageStore.uploadedImageUrl) {
@@ -243,60 +237,11 @@ function selectTemplate(id, imageUrl, prompt_) {
 	prompt.value = prompt_
 }
 
-async function login_108() {
-	try {
-		let time = new Date().getTime()
-		console.log(`demo index login in time = ${time}`)
-		
-		let user = new User()
-		let temp = await user.islogin()
-		console.log(`demo index islogin res time = ${new Date().getTime() - time}`)
-		if (!temp) {
-			showLoadingToast({
-				duration: 0,
-				forbidClick: true,
-				message: 'Loading...',
-			});
-
-			console.log(`demo index before login time = ${new Date().getTime() - time}`)
-			user.login((acc, userId, error) => {
-				closeToast();
-				console.log(`demo index login res time = ${new Date().getTime() - time}`)
-				console.log("getWeb3 account", acc)
-				console.log("getWeb3 userId", userId)
-				console.log("getWeb3 error", error)
-				if (error) {
-					if (error && typeof error == 'string') {
-						showToast(error);
-					} else {
-						showToast(error.message);
-					}
-					return
-				}
-				bus.emit('get_balance', "login");
-			})
-			console.log(`demo index after login time = ${new Date().getTime() - time}`)
-			return
-		}
-		bus.emit('get_balance', "login");
-	} catch (error) {
-		console.log("index demo error", error)
-		closeToast();
-		if (error && typeof error == 'string') {
-			showToast(error);
-		} else {
-			showToast(error.message);
-		}
-	} finally {
-	}
-
-}
-
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function login_1012() {
+async function login() {
 	try {
 		let time = new Date().getTime()
 		console.log(`demo index login start time = ${time}`)
@@ -343,8 +288,7 @@ async function login_1012() {
 
 onMounted(() => {
 	getTemplateList()
-	// login_108()
-	login_1012()
+	login()
 })
 
 </script>

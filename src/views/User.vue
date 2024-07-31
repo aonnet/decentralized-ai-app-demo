@@ -65,90 +65,6 @@ function goToComplete() {
 		path: '/complete'
 	})
 }
-// https://app.aonet.ai/api
-// https://app.aonet.ai/kvapi
-async function getAccount() {
-	try {
-		//User 的使用方法
-		let user = new User()
-		const isLogin_status = await user.islogin()
-		console.log(isLogin_status, 'isLogin_status')
-		if (!isLogin_status) {
-			showLoadingToast({
-				duration: 0,
-				forbidClick: true,
-				message: 'Loading...',
-			});
-			user.login((acc, userId, error) => {
-				closeToast()
-				console.log("getWeb3 account", acc)
-				console.log("getWeb3 userId", userId)
-				console.log("getWeb3 error", error)
-				account.value = acc
-				bus.emit('get_balance', "login");
-				// eventBus.config.globalProperties.$emit('balance');
-			})
-		} else {
-			let ethereum = await detectEthereumProvider()
-			let get_account = await ethereum.request({ method: 'eth_requestAccounts' })
-			get_account = get_account[0]
-			account.value = get_account
-			bus.emit('get_balance', "login");
-		}
-	} catch (error) {
-		closeToast()
-
-		console.log(error, "getAccount error")
-		if (error && typeof error == 'string') {
-			showToast(error);
-		} else {
-			showToast(error.message);
-		}
-	} finally {
-	}
-
-	// console.log("getWeb3 account", addr)
-	// account.value = addr[0]
-
-
-	// //detectEthereumProvider 的使用方法
-	// let ethereum = await detectEthereumProvider(options)
-	// if (ethereum) {
-	// 	// console.log(ethereum)
-	// 	const web3 = new Web3(ethereum);
-	// 	try {
-	// 		let account = await ethereum.request({ method: 'eth_requestAccounts' })
-	// 		console.log('getWeb3 account', account)
-	// 		account = account[0]
-	// 		return web3;
-	// 	} catch (error) {
-	// 		// User denied account access...
-	// 		return null;
-	// 	}
-	// }
-
-	// // AI 使用方法
-	// const ai_options = {
-	// 	//Please replace with your own API key or jwt token.
-	// 	auth: "$API_KEY"
-	// }
-
-	// const aonet = new AI(ai_options)
-
-	// let response = await aonet.prediction("/predictions/ai/face-to-many",
-	// 	{
-	// 		input: {
-	// 			"image": "https://aonet.ai/pbxt/KW7CdCusXMkkOs9bbCGYsInC8EUxlj3yBLxvfW9Fs9FFMZUL/MTk4MTczMTkzNzI1Mjg5NjYy.webp",
-	// 			"style": "3D",
-	// 			"prompt": "a zombie in a fire, burning flames behind him",
-	// 			"negative_prompt": "boring",
-	// 			"prompt_strength": 4.5,
-	// 			"denoising_strength": 1,
-	// 			"instant_id_strength": 0.8
-	// 		}
-	// 	})
-	// console.log("test", response)
-}
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -201,7 +117,6 @@ async function login() {
 }
 
 onMounted(() => {
-	// getAccount()
 	login()
 })
 
