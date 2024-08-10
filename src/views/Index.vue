@@ -235,7 +235,7 @@ const formSubmit = async () => {
 
 		const ai_options = new AIOptions({
 			appId: 'k3ebyfaSz8b87xJb_VyEGXx_AJ0MM8ngqU7Ym3AKeW8A',
-			ai_server:'http://localhost:8088'
+			// ai_server:'http://localhost:8088'
 		})
 
 		const aonet = new AI(ai_options)
