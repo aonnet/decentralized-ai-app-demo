@@ -1,14 +1,39 @@
 <template>
-	<div class="custom-navbar">
-		<img src="../assets/logo_.png" class="logo" @click="goIndex"></img>
+	<div>
+		<div v-for="(value,key) in page_config && page_config.properties" :key="key">
+			<div v-if="value.ui_type && value.ui_type.length && value.ui_type == 'header'">
+				<div class="custom-navbar">
+					<div class="left">
+						<div v-for="(header,key1) in value.properties" :key="key1">
+						<div v-if="header.ui_type && header.ui_type.length && header.ui_type == 'image'">
+							<img :src="appData && 
+							appData.params_value && 
+							appData.params_value.ui && 
+							appData.params_value.ui[page_config.title] && 
+							appData.params_value.ui[page_config.title][key] &&
+							appData.params_value.ui[page_config.title][key][key1]" class="logo" @click="goIndex"></img>
+						</div>
+						<div v-if="header.ui_type && header.ui_type.length && header.ui_type == 'label'">
+							<div class="title">{{appData && 
+							appData.params_value && 
+							appData.params_value.ui && 
+							appData.params_value.ui[page_config.title] && 
+							appData.params_value.ui[page_config.title][key] &&
+							appData.params_value.ui[page_config.title][key][key1]}}</div>
+						</div>
+					</div>
+					</div>
+					
 
-		<div class="title">AON 3D Clothing</div>
-		<div class="right">
-			<div class="right_count">
-				<img src="../assets/icons/money.png" class="moneyIcon"></img>
-				<span class="count">{{ balanceValue }}</span>
+					<div class="right">
+						<div class="right_count">
+							<img src="../assets/icons/money.png" class="moneyIcon"></img>
+							<span class="count">{{ balanceValue }}</span>
+						</div>
+						<img src="../assets/icons/user.png" v-if="!isUserPage" class="userIcon" @click="goUser"></img>
+					</div>
+				</div>
 			</div>
-			<img src="../assets/icons/user.png" v-if="!isUserPage" class="userIcon" @click="goUser"></img>
 		</div>
 	</div>
 </template>
@@ -25,6 +50,7 @@ import { User } from 'aonweb'
 
 import bus from '../eventBus.js';
 import { showToast, showLoadingToast, closeToast } from 'vant';
+import {loadAppData } from '../lib/loadApp'
 
 
 const router = useRouter()
@@ -32,6 +58,10 @@ const route = useRoute()
 const isUserPage = ref(false);
 
 const balanceValue = ref(0);
+const appData = ref({})
+const page_config = ref({})
+
+let page = ''
 
 
 const props = defineProps({
@@ -91,7 +121,24 @@ const checkIfUserPage = () => {
 	isUserPage.value = route.path === '/user'
 };
 
+async function load() {
+	let temp = await loadAppData(window.location.origin)
+	let temp_ = JSON.parse(JSON.stringify({ ...temp }));
+	console.log("index load = ", temp_)
+	// temp = sortObjectByIndex(temp)
+	// console.log("index load 1111 = ",JSON.stringify(temp))
+	temp_ && temp_.template_params &&  temp_.template_params.ui && temp_.template_params.ui.pages && temp_.template_params.ui.pages.forEach(element => {
+		console.log("index load 1111 = ",element)
+		if (element && element.sort == 0) {
+			page = element.title
+			page_config.value = element
+		}
+	});
+	appData.value = temp_
+}
+
 onMounted(() => {
+	load()
 	checkIfUserPage();
 	let balance = localStorage.getItem("aon_balance")
 	balanceValue.value = balance
@@ -107,34 +154,46 @@ onMounted(() => {
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-between;
-	height: 13.33vw;
-	padding: 0 6.4vw;
-	background-color: #fff;
+	min-height: 13.33vw;
+	padding: 3.73vw 6.4vw;
+	background-color: #1C1C1C;
+}
+
+.left{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.left div{
+	display: flex;
+	align-items: center;
 }
 
 .logo {
-	width: 10.67vw;
-	height: 4.8vw;
+	width: 7.47vw;
+	height: 7.47vw;
+	margin-right: 2.13vw;
 }
 
 
 .title {
-	flex: 1;
+	/* flex: 1; */
 	font-family: Roboto-Black;
 	font-weight: 900;
 	font-size: 4.8vw;
-	color: #000000;
+	color: #fff;
 	text-align: left;
 	font-style: normal;
 	text-transform: none;
-	margin-left: 2.13vw;
+	/* margin-left: 2.13vw; */
 }
 
 .right {
 	min-width: 16.8vw;
 	height: 6.4vw;
 	padding: 0 1.07vw;
-	background: #000000;
+	background: linear-gradient( 147deg, #8AF25F 0%, #F7FFF0 100%);
 	border-radius: 10.67vw;
 	display: flex;
 	flex-direction: row;
@@ -165,7 +224,7 @@ onMounted(() => {
 	font-family: Roboto, Roboto;
 	font-weight: bold;
 	font-size: 2.67vw;
-	color: #FFFFFF;
+	color: #141414;
 	text-align: left;
 	font-style: normal;
 	text-transform: none;

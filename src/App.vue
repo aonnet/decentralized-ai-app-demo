@@ -23,7 +23,7 @@ import Header from '@/components/Header.vue';
 	left: 0;
 	padding: 0 6.4vw;
 	box-sizing: border-box;
-
+	z-index: 9;
 	display: flex;
 	flex-direction: row;
 	align-items: center;

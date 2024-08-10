@@ -11,6 +11,7 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.45.1",
     "aonweb": "^1.0.13",
     "aos": "^2.3.4",
     "axios": "^1.6.8",

@@ -3,74 +3,99 @@
 	<div>
 		<!-- 页面内容 -->
 		<div class="container">
-			<div class="banner">
-				<img src="../assets/images/banner.png" mode=""></img>
-				<p>AON 3D Clothing</p>
-				<p>Customize your clothing logo and generate a 3D avatar</p>
-			</div>
-			<div class="uni-form-item uni-column">
-				<div class="title">Upload your photos</div>
+			<div v-for="(value, key) in page_config && page_config.properties"
+				:key="key">
+				<!-- {{ key }} -->
+				<div v-if="value.ui_type && value.ui_type.length && value.ui_type == 'main' && value.show !== 'nodisplay'">
+					<div v-for="(form, key1) in value.properties" :key="key1">
+						<div v-if="form.ui_type && form.ui_type.length && form.show !== 'nodisplay'" class="uni-form-item uni-column">
+							<!-- {{ key1 }}: {{ form }} -->
+							<div class="title">{{ form.title }}</div>
+							<div :class="`content ${form.ui_type == 'banner' && 'banner'}`"
+								v-if="form.ui_type == 'banner'">
+								<img :src="appData &&
+								appData.params_value &&
+								appData.params_value.ui &&
+								appData.params_value.ui[page_config.title] &&
+								appData.params_value.ui[page_config.title][key] &&
+								appData.params_value.ui[page_config.title][key][key1]"></img>
+								<p>AON 3D Clothing</p>
+								<p>Customize your clothing logo and generate a 3D avatar</p>
+							</div>
+							<div class="content" v-if="form.ui_type == 'input'">
+								<input v-model="appData.params_value.ui[page_config.title][key][key1]" name="input"
+									:placeholder="form.placeholder" />
+							</div>
+							<div class="content" v-if="form.ui_type == 'upload'">
+								<van-uploader v-model="appData.params_value.ui[page_config.title][key][key1]" :max-size="maxSize" @oversize="onOversize"
+									:after-read="afterRead" :deletable="true" :before-delete="deleteImg(key, key1)"
+									:max-count="1" :name="key1" :accept="form.accept">
 
-				<div class="content">
-					<div class="upload upload-done" v-if="imageStore.uploadedImageUrl">
-						<img class="upload-res" :src="imageStore.uploadedImageUrl" mode=""></img>
-						<img class="deleteIcon" @click="deleteImg" src="../assets/icons/delete.png" mode=""></img>
-					</div>
-					<van-uploader v-else style="width: 100%" :max-size="maxSize" @oversize="onOversize"
-						:after-read="afterRead">
+									<div class="upload upload-before">
+										<img class="uploadIcon" src="../assets/icons/uploadImg.png" mode=""></img>
+										<text>{{form.placeholder}}</text>
+									</div>
 
-						<div class="upload upload-before">
-							<img class="uploadIcon" src="../assets/icons/uploadImg.png" mode=""></img>
-							<text>limit 30MB per file</text>
+								</van-uploader>
+							</div>
+							<div class="content" v-if="form.ui_type == 'radio'">
+								<van-radio-group v-model="appData.params_value.ui[page_config.title][key][key1]" direction="row"
+									class="custom-radio-group">
+									<van-radio v-for="(value, index) in form.enum" :key="index" :name="index"
+										checked-color="#2EE9D0" class="custom-radio">{{ value }}</van-radio>
+								</van-radio-group>
+							</div>
+							<div class="content" v-if="form.ui_type == 'select_nomal'">
+								<van-dropdown-menu>
+									<van-dropdown-item v-model="appData.params_value.ui[page_config.title][key][key1]"
+										:options="form.enum" />
+								</van-dropdown-menu>
+							</div>
+							<div class="content" v-if="form.ui_type == 'texteara'">
+								<van-field rows="3" autosize type="textarea"
+									v-model="appData.params_value.ui[page_config.title][key][key1]" label=""
+									:placeholder="form.placeholder" />
+							</div>
+							<div v-if="form.ui_type == 'select'">
+								<div class="templateCon"
+									v-if="appData.params_value.ui[page_config.title][key][key1] && appData.params_value.ui[page_config.title][key][key1].length > 0">
+									<div v-for="(item, index) in appData.params_value.ui[page_config.title][key][key1]"
+										:class="`template_item ${item.selected ? 'templateActive' : ''}`"
+										@click="selectTemplate(item)" :key="index">
+										<img :src="item.value.image" alt="" />
+										<div :class="`isActiveIcon ${item.selected  ? 'active' : ''}`">
+											<img src="../assets/icons/selectIcon.png" alt="" v-if="item.selected ">
+										</div>
+										<!-- <text :class="`text ${item.selected ? 'active' : ''}`">{{item.value.title}}</text> -->
+									</div>
+								</div>
+							</div>
 						</div>
-					</van-uploader>
-
-
-				</div>
-
-			</div>
-
-			<!-- <div class="uni-form-item uni-column">
-				<div class="title">Customize your clothing logo</div>
-				<div class="content">
-					<input v-model="prompt" name="input" placeholder="Please enter the logo text on your clothes" />
-				</div>
-			</div> -->
-
-			<div class="uni-form-item uni-column">
-				<div class="title">Choose your template</div>
-				<div class="templateCon" v-if="templateList.length > 0">
-					<div v-for="(item, index) in templateList"
-						:class="`template_item ${Number(item.id) === templateId ? 'templateActive' : ''}`"
-						@click="selectTemplate(Number(item.id), item.image, item.prompt)" :key="index">
-						<img :src="item.image" alt="" />
-						<div :class="`isActiveIcon ${Number(item.id) === templateId ? 'active' : ''}`">
-							<img src="../assets/icons/selectIcon.png" alt="" v-if="Number(item.id) === templateId">
-						</div>
 					</div>
 				</div>
-			</div>
+				<div v-if="value.ui_type && value.ui_type.length && value.ui_type == 'footer' && value.show !== 'nodisplay'">
+					<div v-for="(footer, key) in value.properties" :key="key">
+						<div v-if="footer.ui_type && footer.ui_type.length && footer.show !== 'nodisplay' && footer.ui_type == 'button'">
+							<div class="bottom_btn">
+								<div class="spendCount">
+									<img class="icon" src="../assets/icons/money.png" mode=""></img>
+									<text>-{{price}}</text>
+								</div>
+								<button :disabled="false" :class="`submitBtn ${false && 'submitBtn_disabled'}`" @click="formSubmit">
+									<text>{{ footer.title }}</text>
+								</button>
+							</div>
+						</div>
+					</div>
 
-			<div class="uni-form-item error-text" v-if="showError">
-				<div class="content">Please Upload your photos</div>
-			</div>
-			<div class="bottom_btn">
-				<div class="spendCount">
-					<img class="icon" src="../assets/icons/money.png" mode=""></img>
-					<text>-8</text>
 				</div>
-				<button class="submitBtn" @click="formSubmit">
-					<text>Generate img</text>
-				</button>
 			</div>
-
-
 		</div>
 	</div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted ,toRaw} from 'vue';
 import { showToast, showLoadingToast, closeToast } from 'vant';
 import { useRouter } from 'vue-router'
 
@@ -81,6 +106,7 @@ import { useImageStore } from '@/store/imageStore';
 import 'vant/lib/index.css';
 import Loading from '../components/Loading.vue';
 import bus from '../eventBus.js';
+import {loadAppData } from '../lib/loadApp'
 
 const router = useRouter()
 const imageStore = useImageStore();
@@ -90,6 +116,11 @@ const showError = ref(false);
 const prompt = ref('');
 const templateList = ref([]);
 const templateId = ref(1);
+const appData = ref({})
+const page_config = ref({})
+
+let page = ''
+let price = ref(10)
 
 
 const maxSize = 30 * 1024 * 1024;
@@ -106,7 +137,7 @@ const onOversize = (file) => {
 	showToast('文件大小不能超过 30MB');
 };
 
-function afterRead(file) {
+function afterRead(file,detail) {
 	const formData = new FormData();
 	formData.append('file', file.file);
 
@@ -114,6 +145,9 @@ function afterRead(file) {
 	uploadFile(formData).then(res => {
 		if (res.code == 200 && res.data && res.data.length) {
 			imageStore.addImage(res.data);
+			// let data = rawAppData.params_value.ui[page_config.title].main[detail.name]
+			// let deal = data && data.length && data[0]
+			file.remote_url = res.data
 		}
 	}).catch(err => {
 		showToast('image upload failed');
@@ -132,18 +166,21 @@ const uploadFile = async (formData) => {
 };
 
 function deleteImg() {
-	if (imageStore.uploadedImageUrl) {
-		const formData = new FormData();
-		formData.append('file', imageStore.uploadedImageUrl);
+	// if (imageStore.uploadedImageUrl) {
+	// 	const formData = new FormData();
+	// 	formData.append('file', imageStore.uploadedImageUrl);
 
-		// 删除文件
-		formData.delete('file');
+	// 	// 删除文件
+	// 	formData.delete('file');
 
-		imageStore.removeImage();
+	// 	imageStore.removeImage();
 
-		console.log('File deleted:', formData.get('file'));
-	} else {
-		console.log('No file to delete')
+	// 	console.log('File deleted:', formData.get('file'));
+	// } else {
+	// 	console.log('No file to delete')
+	// }
+	if (appData.params_value && appData.params_value.ui) {
+		appData.params_value.ui.body[key][key1] = []
 	}
 }
 
@@ -157,30 +194,70 @@ const formSubmit = async () => {
 		}, 3000)
 		return
 	}
-	showLoading.value = true
+	
 	try {
 		// AI 使用方法
+		let rawAppData = toRaw(appData.value)
+		if (!rawAppData || !rawAppData.params_value) {
+			return
+		}
+		if (!rawAppData || !rawAppData.template_params) {
+			return
+		}
+		let page_config_temp = toRaw(page_config.value)
+		console.log('rawAppData.params_value.ui[page_config.title] = ',rawAppData.params_value.ui[page_config_temp.title],page_config_temp)
+		let images = rawAppData.params_value.ui[page_config_temp.title].main.image
+		let image_url = null
+		if (images && images.length) {
+			let img = images[0]
+			img = toRaw(img)
+			image_url = img.remote_url
+		}
+		if (!(image_url && image_url.length)) {
+			showToast('Please uplaod a photo')
+			return
+		}
+		// let male = await male_or_famale()
+		
+		let select_item = null
+		let clothings = rawAppData.params_value.ui[page_config_temp.title].main.clothing
+		clothings.forEach((item => {
+			if (item.selected) {
+				select_item = item
+				return false
+			}
+		}))
+		let prompt_input = (select_item && select_item.value.prompt) || ''
+		console.log("prompt_input = ", prompt_input)
+		prompt_input = 'use the face in  main_face_image and use the clothing in auxiliary_face_image1,' + prompt_input
+
+		showLoading.value = true
+
 		const ai_options = new AIOptions({
-			appId: 'k3ebyfaSz8b87xJb_VyEGXx_AJ0MM8ngqU7Ym3AKeW8A'
+			appId: 'k3ebyfaSz8b87xJb_VyEGXx_AJ0MM8ngqU7Ym3AKeW8A',
+			ai_server:'http://localhost:8088'
 		})
 
 		const aonet = new AI(ai_options)
 
+		let ai_config = rawAppData.params_value && rawAppData.params_value.ai && rawAppData.params_value.ai['pulid']
+		console.log('ai_config =',ai_config)
 		const data = {
 			input: {
-				"prompt": "",
-				"cfg_scale": 1.2,
-				"num_steps": 4,
-				"image_width": 768,
-				"num_samples": 1,
-				"image_height": 1024,
-				"output_format": "webp",
-				"identity_scale": 0.8,
-				"mix_identities": false,
-				"output_quality": 80,
-				"generation_mode": "fidelity",
-				"main_face_image": imageStore.uploadedImageUrl,
-				"negative_prompt": ""
+				"prompt": prompt_input,
+				"cfg_scale": ai_config.cfg_scale,
+				"num_steps": ai_config.num_steps,
+				"image_width": ai_config.image_width,
+				"num_samples": ai_config.num_samples,
+				"image_height": ai_config.image_height,
+				"output_format": ai_config.output_format,
+				"identity_scale": ai_config.identity_scale,
+				"mix_identities": ai_config.mix_identities,
+				"output_quality": ai_config.output_quality,
+				"generation_mode": ai_config.generation_mode,
+				"main_face_image": image_url,
+				"auxiliary_face_image1":select_item && select_item.value && select_item.value.image,
+				"negative_prompt": ai_config.negative_prompt
 			}
 		}
 		console.log("formSubmit data", data)
@@ -213,6 +290,7 @@ const formSubmit = async () => {
 	} catch (error) {
 		showLoading.value = false
 		// showToast('AI processing failed')
+		console.log('formSubmit error = ',error)
 		if (error && typeof error == 'string') {
 			showToast(error);
 		} else {
@@ -232,9 +310,29 @@ async function getTemplateList() {
 	}
 }
 
-function selectTemplate(id, imageUrl, prompt_) {
-	templateId.value = id
-	prompt.value = prompt_
+function selectTemplate(item) {
+	console.log("selectTemplate = ", item)
+	let rawAppData = toRaw(appData.value)
+	if (!rawAppData) {
+		return
+	}
+	let page_config_temp = toRaw(page_config.value)
+	for (const key in page_config_temp.properties) {
+		let value = page_config_temp.properties[key]
+		if (value && value.ui_type == 'main') {
+			for (const key1 in value.properties) {
+				let form = value.properties[key1]
+				if (form && form.ui_type == 'select') {
+					let temp = rawAppData.params_value.ui[page_config_temp.title][key][key1]
+					for (let i = 0; i < temp.length; i++) {
+						let loaction = temp[i]
+						loaction.selected = false
+					}
+				}
+			}
+		}
+	}
+	item.selected = true
 }
 
 function sleep(ms) {
@@ -285,8 +383,25 @@ async function login() {
 	}
 }
 
+async function load() {
+	let temp = await loadAppData(window.location.origin)
+	let temp_ = JSON.parse(JSON.stringify({ ...temp }));
+	console.log("index load = ", temp_)
+	// temp = sortObjectByIndex(temp)
+	// console.log("index load 1111 = ",JSON.stringify(temp))
+	temp_ && temp_.template_params &&  temp_.template_params.ui && temp_.template_params.ui.pages && temp_.template_params.ui.pages.forEach(element => {
+		console.log("index load 1111 = ",element)
+		if (element && element.sort == 0) {
+			page = element.title
+			page_config.value = element
+		}
+	});
+	appData.value = temp_
+}
+
 
 onMounted(() => {
+	load()
 	getTemplateList()
 	login()
 })
