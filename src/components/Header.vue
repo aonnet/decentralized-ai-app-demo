@@ -171,7 +171,9 @@ onMounted(() => {
 }
 
 .logo {
-	width: 7.47vw;
+	/* width: 7.47vw;
+	height: 7.47vw; */
+	width: auto;
 	height: 7.47vw;
 	margin-right: 2.13vw;
 }

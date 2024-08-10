@@ -82,8 +82,8 @@
 
 body {
   min-height: 100vh;
-  color: #000;
-  background: #fff;
+  color: #fff;
+  background: #1C1C1C;
   transition:
     color 0.5s,
     background-color 0.5s;

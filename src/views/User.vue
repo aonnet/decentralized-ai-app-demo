@@ -149,7 +149,7 @@ onMounted(() => {
 	font-family: Roboto-Regular;
 	font-weight: 400;
 	font-size: 3.73vw;
-	color: #000000;
+	color: #fff;
 	line-height: 5.6vw;
 	text-align: left;
 	font-style: normal;
@@ -176,32 +176,80 @@ onMounted(() => {
 
 .person-banner {
 	width: 100%;
-	height: 36.27vw;
-	margin: 6.4vw 0;
+	height: 100%;
+	margin: 9.6vw 0 0;
 }
 
-.myWork text {
+.myWork {
+	width: 100%;
+	margin-top: 8vw;
+}
+
+.myWork .tit {
+	display: inline-flex;
 	font-family: Roboto-Bold;
 	font-weight: bold;
-	font-size: 3.73vw;
-	color: #000000;
+	font-size: 4.27vw;
+	color: #fff;
 	text-align: left;
 	font-style: normal;
 	text-transform: none;
-	margin-bottom: 4.27vw;
+	margin-bottom: 4.13vw;
+}
+
+/* .waterfall {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(40vw, 1fr));
+	grid-auto-rows: 2.67vw;
+	grid-gap: 2.67vw;
+}
+
+.waterfall .waterfall-column {
+	width: 40vw;
+	height: max-content;
+	margin-bottom: 6.4vw;
+
+	display: flex;
+	flex-direction: column;
+	grid-row: span 10;
+}
+
+.waterfall .waterfall-column img {
+	width: 100%;
+	height: auto;
+	object-fit: cover;
+} */
+
+.columns {
+  column-count: 2;
+  column-gap: 6.4vw;
+}
+
+.column-item {
+  width: 40vw;
+  break-inside: avoid;
+  overflow: hidden;
+  margin-bottom: 6.4vw;
+}
+
+.column-item img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
 }
 
 button {
 	width: 100%;
 	height: 9.07vw;
-	background: #000000;
-	box-shadow: 1.07vw 1.07vw 2.13vw .13vw rgba(0, 0, 0, 0.32);
+	background: linear-gradient( 117deg, #43E8A0 0%, #8AF25F 100%);
+	box-shadow: 2.13vw 2.13vw 4.27vw .27vw rgba(0, 0, 0, 0.32);
+
 	border-radius: 1.07vw;
 
 	font-family: Roboto-Black;
-	font-weight: 900;
-	font-size: 3.73vw;
-	color: #FFFFFF;
+	font-size: 4.27vw;
+	font-weight: bold;
+	color: #1C1C20;
 	text-align: center;
 	font-style: normal;
 	text-transform: none;

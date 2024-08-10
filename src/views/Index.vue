@@ -3,44 +3,46 @@
 	<div>
 		<!-- 页面内容 -->
 		<div class="container">
-			<div v-for="(value, key) in page_config && page_config.properties"
-				:key="key">
+			<div v-for="(value, key) in page_config && page_config.properties" :key="key">
 				<!-- {{ key }} -->
-				<div v-if="value.ui_type && value.ui_type.length && value.ui_type == 'main' && value.show !== 'nodisplay'">
+				<div
+					v-if="value.ui_type && value.ui_type.length && value.ui_type == 'main' && value.show !== 'nodisplay'">
 					<div v-for="(form, key1) in value.properties" :key="key1">
-						<div v-if="form.ui_type && form.ui_type.length && form.show !== 'nodisplay'" class="uni-form-item uni-column">
+						<div v-if="form.ui_type && form.ui_type.length && form.show !== 'nodisplay'"
+							class="uni-form-item uni-column">
 							<!-- {{ key1 }}: {{ form }} -->
 							<div class="title">{{ form.title }}</div>
 							<div :class="`content ${form.ui_type == 'banner' && 'banner'}`"
 								v-if="form.ui_type == 'banner'">
 								<img :src="appData &&
-								appData.params_value &&
-								appData.params_value.ui &&
-								appData.params_value.ui[page_config.title] &&
-								appData.params_value.ui[page_config.title][key] &&
-								appData.params_value.ui[page_config.title][key][key1]"></img>
-								<p>AON 3D Clothing</p>
-								<p>Customize your clothing logo and generate a 3D avatar</p>
+		appData.params_value &&
+		appData.params_value.ui &&
+		appData.params_value.ui[page_config.title] &&
+		appData.params_value.ui[page_config.title][key] &&
+		appData.params_value.ui[page_config.title][key][key1]"></img>
+								<!-- <p>AON 3D Clothing</p>
+								<p>Customize your clothing logo and generate a 3D avatar</p> -->
 							</div>
 							<div class="content" v-if="form.ui_type == 'input'">
 								<input v-model="appData.params_value.ui[page_config.title][key][key1]" name="input"
 									:placeholder="form.placeholder" />
 							</div>
 							<div class="content" v-if="form.ui_type == 'upload'">
-								<van-uploader v-model="appData.params_value.ui[page_config.title][key][key1]" :max-size="maxSize" @oversize="onOversize"
-									:after-read="afterRead" :deletable="true" :before-delete="deleteImg(key, key1)"
-									:max-count="1" :name="key1" :accept="form.accept">
+								<van-uploader v-model="appData.params_value.ui[page_config.title][key][key1]"
+									:max-size="maxSize" @oversize="onOversize" :after-read="afterRead" :deletable="true"
+									:before-delete="deleteImg(key, key1)" :max-count="1" :name="key1"
+									:accept="form.accept">
 
 									<div class="upload upload-before">
 										<img class="uploadIcon" src="../assets/icons/uploadImg.png" mode=""></img>
-										<text>{{form.placeholder}}</text>
+										<text>{{ form.placeholder }}</text>
 									</div>
 
 								</van-uploader>
 							</div>
 							<div class="content" v-if="form.ui_type == 'radio'">
-								<van-radio-group v-model="appData.params_value.ui[page_config.title][key][key1]" direction="row"
-									class="custom-radio-group">
+								<van-radio-group v-model="appData.params_value.ui[page_config.title][key][key1]"
+									direction="row" class="custom-radio-group">
 									<van-radio v-for="(value, index) in form.enum" :key="index" :name="index"
 										checked-color="#2EE9D0" class="custom-radio">{{ value }}</van-radio>
 								</van-radio-group>
@@ -62,9 +64,12 @@
 									<div v-for="(item, index) in appData.params_value.ui[page_config.title][key][key1]"
 										:class="`template_item ${item.selected ? 'templateActive' : ''}`"
 										@click="selectTemplate(item)" :key="index">
-										<img :src="item.value.image" alt="" />
-										<div :class="`isActiveIcon ${item.selected  ? 'active' : ''}`">
-											<img src="../assets/icons/selectIcon.png" alt="" v-if="item.selected ">
+
+										<div class="imgCon">
+											<img :src="item.value.image" alt="" />
+										</div>
+										<div :class="`isActiveIcon ${item.selected ? 'active' : ''}`">
+											<img src="../assets/icons/selectIcon.png" alt="" v-if="item.selected">
 										</div>
 										<!-- <text :class="`text ${item.selected ? 'active' : ''}`">{{item.value.title}}</text> -->
 									</div>
@@ -73,15 +78,18 @@
 						</div>
 					</div>
 				</div>
-				<div v-if="value.ui_type && value.ui_type.length && value.ui_type == 'footer' && value.show !== 'nodisplay'">
+				<div
+					v-if="value.ui_type && value.ui_type.length && value.ui_type == 'footer' && value.show !== 'nodisplay'">
 					<div v-for="(footer, key) in value.properties" :key="key">
-						<div v-if="footer.ui_type && footer.ui_type.length && footer.show !== 'nodisplay' && footer.ui_type == 'button'">
+						<div
+							v-if="footer.ui_type && footer.ui_type.length && footer.show !== 'nodisplay' && footer.ui_type == 'button'">
 							<div class="bottom_btn">
 								<div class="spendCount">
 									<img class="icon" src="../assets/icons/money.png" mode=""></img>
-									<text>-{{price}}</text>
+									<text>-{{ price }}</text>
 								</div>
-								<button :disabled="false" :class="`submitBtn ${false && 'submitBtn_disabled'}`" @click="formSubmit">
+								<button :disabled="false" :class="`submitBtn ${false && 'submitBtn_disabled'}`"
+									@click="formSubmit">
 									<text>{{ footer.title }}</text>
 								</button>
 							</div>
@@ -95,7 +103,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted ,toRaw} from 'vue';
+import { ref, onMounted, toRaw } from 'vue';
 import { showToast, showLoadingToast, closeToast } from 'vant';
 import { useRouter } from 'vue-router'
 
@@ -106,7 +114,7 @@ import { useImageStore } from '@/store/imageStore';
 import 'vant/lib/index.css';
 import Loading from '../components/Loading.vue';
 import bus from '../eventBus.js';
-import {loadAppData } from '../lib/loadApp'
+import { loadAppData } from '../lib/loadApp'
 
 const router = useRouter()
 const imageStore = useImageStore();
@@ -137,7 +145,7 @@ const onOversize = (file) => {
 	showToast('文件大小不能超过 30MB');
 };
 
-function afterRead(file,detail) {
+function afterRead(file, detail) {
 	const formData = new FormData();
 	formData.append('file', file.file);
 
@@ -194,7 +202,7 @@ const formSubmit = async () => {
 		}, 3000)
 		return
 	}
-	
+
 	try {
 		// AI 使用方法
 		let rawAppData = toRaw(appData.value)
@@ -205,7 +213,7 @@ const formSubmit = async () => {
 			return
 		}
 		let page_config_temp = toRaw(page_config.value)
-		console.log('rawAppData.params_value.ui[page_config.title] = ',rawAppData.params_value.ui[page_config_temp.title],page_config_temp)
+		console.log('rawAppData.params_value.ui[page_config.title] = ', rawAppData.params_value.ui[page_config_temp.title], page_config_temp)
 		let images = rawAppData.params_value.ui[page_config_temp.title].main.image
 		let image_url = null
 		if (images && images.length) {
@@ -218,7 +226,7 @@ const formSubmit = async () => {
 			return
 		}
 		// let male = await male_or_famale()
-		
+
 		let select_item = null
 		let clothings = rawAppData.params_value.ui[page_config_temp.title].main.clothing
 		clothings.forEach((item => {
@@ -241,7 +249,7 @@ const formSubmit = async () => {
 		const aonet = new AI(ai_options)
 
 		let ai_config = rawAppData.params_value && rawAppData.params_value.ai && rawAppData.params_value.ai['pulid']
-		console.log('ai_config =',ai_config)
+		console.log('ai_config =', ai_config)
 		const data = {
 			input: {
 				"prompt": prompt_input,
@@ -256,7 +264,7 @@ const formSubmit = async () => {
 				"output_quality": ai_config.output_quality,
 				"generation_mode": ai_config.generation_mode,
 				"main_face_image": image_url,
-				"auxiliary_face_image1":select_item && select_item.value && select_item.value.image,
+				"auxiliary_face_image1": select_item && select_item.value && select_item.value.image,
 				"negative_prompt": ai_config.negative_prompt
 			}
 		}
@@ -290,7 +298,7 @@ const formSubmit = async () => {
 	} catch (error) {
 		showLoading.value = false
 		// showToast('AI processing failed')
-		console.log('formSubmit error = ',error)
+		console.log('formSubmit error = ', error)
 		if (error && typeof error == 'string') {
 			showToast(error);
 		} else {
@@ -336,7 +344,7 @@ function selectTemplate(item) {
 }
 
 function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function login() {
@@ -354,13 +362,13 @@ async function login() {
 			});
 			console.log(`demo index showLoadingToast end time = ${time}`)
 			for (let i = 0; i < 5; i++) {
-			// console.log("getOwnedUsers i = ",i)
+				// console.log("getOwnedUsers i = ",i)
 				let result = await user.getOwnedUsers()
 				let userid = result && result._userIds && result._userIds.length && result._userIds[0]
 				if (userid && userid.length) {
 					break
 				}
-				await sleep(300)       
+				await sleep(300)
 			}
 			closeToast();
 			temp = await user.islogin()
@@ -389,8 +397,8 @@ async function load() {
 	console.log("index load = ", temp_)
 	// temp = sortObjectByIndex(temp)
 	// console.log("index load 1111 = ",JSON.stringify(temp))
-	temp_ && temp_.template_params &&  temp_.template_params.ui && temp_.template_params.ui.pages && temp_.template_params.ui.pages.forEach(element => {
-		console.log("index load 1111 = ",element)
+	temp_ && temp_.template_params && temp_.template_params.ui && temp_.template_params.ui.pages && temp_.template_params.ui.pages.forEach(element => {
+		console.log("index load 1111 = ", element)
 		if (element && element.sort == 0) {
 			page = element.title
 			page_config.value = element
@@ -409,52 +417,40 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.banner {
-	width: 100%;
-	height: 27.73vw;
-	margin-top: 8.53vw;
-	margin-bottom: 8.53vw;
-	position: relative;
-	padding: 4.27vw;
+.custom-radio-group {
+	display: flex;
+	justify-content: flex-start;
+	/* 确保 radio 组内项目从左对齐 */
 }
 
-.banner img {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
+.custom-radio {
+	display: flex;
+	align-items: center;
+	/* 确保 radio 和文字在垂直方向居中 */
+	justify-content: flex-start;
+	/* 确保内容在水平方向左对齐 */
+	margin-right: 16px;
+	/* 添加间距 */
+	flex: none;
+	/* 防止 radio 项目拉伸 */
 }
 
-.banner p {
-	position: relative;
-	z-index: 10;
-	font-family: Roboto-Black;
-	font-weight: 900;
-	font-size: 6.4vw;
-	color: #FFFFFF;
+.custom-radio .van-radio__icon--checked .van-icon {
+	background-color: #000;
+	border-color: #000;
+}
+
+.custom-radio .van-radio__label {
 	text-align: left;
-	font-style: normal;
-	text-transform: none;
-}
-
-.banner p:last-child {
-	width: 49.07vw;
-	font-family: Roboto-Regular;
-	font-weight: 400;
-	font-size: 2.4vw;
-	color: #FFFFFF;
-	line-height: 4.27vw;
-	text-align: left;
-	font-style: normal;
-	text-transform: none;
+	/* 强制标签文本左对齐 */
+	color: #fff !important;
 }
 
 .uni-form-item .title {
 	font-family: Roboto-Bold;
 	font-weight: bold;
-	font-size: 3.73vw;
-	color: #000000;
+	font-size: 4.27vw;
+	color: #fff;
 	text-align: left;
 	font-style: normal;
 	text-transform: none;
@@ -467,14 +463,56 @@ onMounted(() => {
 
 .uni-form-item .content {
 	width: 100%;
-	height: 14.93vw;
-	background: #F1F1F1;
+	min-height: 14.93vw;
+	background: #3B3939;
 	border-radius: 1.07vw;
 	display: flex;
 	align-items: center;
 	padding: 0 3.2vw;
 	box-sizing: border-box;
 
+}
+
+.uni-form-item .banner {
+	width: 100%;
+	height: 27.73vw;
+	margin-top: 2.13vw;
+	/* margin-bottom: 8.53vw; */
+	position: relative;
+	padding: 4.27vw;
+	background: transparent;
+}
+
+.uni-form-item .banner img {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.uni-form-item .banner p {
+	position: relative;
+	z-index: 10;
+	font-family: Roboto-Black;
+	font-weight: 900;
+	font-size: 6.4vw;
+	color: #FFFFFF;
+	text-align: left;
+	font-style: normal;
+	text-transform: none;
+}
+
+.uni-form-item .banner p:last-child {
+	width: 49.07vw;
+	font-family: Roboto-Regular;
+	font-weight: 400;
+	font-size: 2.4vw;
+	color: #FFFFFF;
+	line-height: 4.27vw;
+	text-align: left;
+	font-style: normal;
+	text-transform: none;
 }
 
 .error-text {
@@ -490,54 +528,68 @@ onMounted(() => {
 	color: #fff;
 }
 
-.uni-form-item .content input {
-	width: 100%;
-	font-size: 3.2vw;
-	font-family: Roboto-Regular;
-	border: none;
-	outline: none;
-	background-color: #F1F1F1;
+.uploadCon {
+	min-height: 38.67vw;
+	display: flex;
+	background: #554F4F;
+	flex-direction: column;
+	justify-content: center;
 }
 
-.upload {
+.uploadCon .upload {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.upload-before {
 	width: 100%;
 	display: flex;
 	align-items: center;
 }
 
 .upload-before text {
-	color: #575757;
-	font-size: 3.2vw;
+	color: #fff;
+	font-size: 3.73vw;
 	font-family: Roboto-Regular;
 }
 
 .upload-done {
 	justify-content: space-between;
+	position: relative;
 }
 
 .uploadIcon {
-	width: 6.4vw;
-	height: 6.4vw;
-	margin-right: 2.13vw;
+	width: 8.53vw;
+	height: 8.53vw;
+	margin-right: 2.4vw;
 }
 
 .upload-res {
-	width: auto;
-	max-height: 8.53vw;
+	width: 100%;
+	height: 29.87vw;
+	object-fit: cover;
 }
 
 .deleteIcon {
 	height: 5.07vw;
 	width: 5.07vw;
+	position: absolute;
+	right: 2.13vw;
+	top: 2.13vw;
 }
 
 
 .bottom_btn .spendCount {
 	width: 19.2vw;
 	height: 9.07vw;
-	background: #F1F1F1;
+	background: #3B3939;
 	border-radius: 1.07vw;
 	display: flex;
+	z-index: 9;
 	justify-content: center;
 	align-items: center;
 }
@@ -551,54 +603,91 @@ onMounted(() => {
 .bottom_btn .submitBtn {
 	width: 64.8vw;
 	height: 9.07vw;
-	background: #000000;
-	box-shadow: 1.07vw 1.07vw 2.13vw .13vw rgba(0, 0, 0, 0.32);
+	background: linear-gradient(117deg, #43E8A0 0%, #36CFC9 100%);
+	box-shadow: 2.13vw 2.13vw 4.27vw .27vw rgba(0, 0, 0, 0.32);
 	border-radius: 1.07vw;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-
 }
 
 .bottom_btn .submitBtn text {
-	font-size: 3.73vw;
+	font-family: Roboto-Black;
+	font-size: 4.27vw;
 	font-weight: bold;
-	background: linear-gradient(182deg, #2F54EB 0%, #FF26A8 100%);
-	-webkit-background-clip: text;
-	color: transparent;
-	background-clip: text;
+	color: #1C1C20;
+}
+
+.bottom_btn .submitBtn_disabled {
+	background: #434343;
+
 }
 
 .templateCon {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	flex-wrap: wrap;
 	height: auto;
 	background: transparent;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	/* column-count: 2;
+	column-gap: 6.4vw; */
 }
 
 .template_item {
-	width: 24.8vw;
-	height: 44vw;
-	background: #F1F1F1;
+	/* width: 100%; */
+	height: auto;
+	width: 40vw;
+	/* min-height: 38.67vw; */
 	border-radius: 1.07vw;
-	margin-bottom: 4.53vw;
 	position: relative;
 	overflow: hidden;
 	box-sizing: border-box;
+	z-index: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 
+	break-inside: avoid;
+	overflow: hidden;
+	margin-bottom: 6.4vw;
 }
 
-.template_item img {
+.template_item .imgCon {
 	width: 100%;
 	height: 100%;
+}
+
+.template_item .imgCon img {
+	display: inline-block;
+	height: 100%;
+	min-height: 29.87vw;
+	width: 100%;
 	object-fit: cover;
 }
 
-.templateActive {
-	border: .27vw solid #000;
+.template_item .text {
+	width: 100%;
+	height: 8.53vw;
+	line-height: 8.53vw;
+	background: #3B3939;
+	justify-content: flex-start;
+	align-items: center;
+	font-size: 3.2vw;
+	font-family: Roboto-Bold;
+	color: #FFFFFF;
+	padding: 0 2.13vw;
 
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.templateActive {
+	border: .27vw solid #2EE9D0;
+	color: #1C1C1C;
 }
 
 .isActiveIcon {
@@ -620,7 +709,8 @@ onMounted(() => {
 	width: 2.13vw;
 }
 
-.active {
-	background: #EBCC2F;
+.template_item .active {
+	background: #2EE9D0;
+	color: #1C1C1C;
 }
 </style>

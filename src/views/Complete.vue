@@ -46,7 +46,7 @@ const goBack = () => {
 	font-family: Roboto-Bold;
 	font-weight: bold;
 	font-size: 3.2vw;
-	color: #000000;
+	color: #fff;
 	text-align: left;
 	font-style: normal;
 	text-decoration-line: underline;
@@ -65,7 +65,7 @@ const goBack = () => {
 	font-family: Roboto-Black;
 	font-weight: 900;
 	font-size: 6.4vw;
-	color: #000000;
+	color: #fff;
 	line-height: 9.07vw;
 	text-align: left;
 	font-style: normal;
@@ -78,7 +78,7 @@ const goBack = () => {
 	font-family: Roboto-Regular;
 	font-weight: 400;
 	font-size: 3.2vw;
-	color: #000000;
+	color: #fff;
 	line-height: 4.8vw;
 	text-align: left;
 	font-style: normal;

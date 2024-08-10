@@ -1,8 +1,8 @@
 <template>
 	<div class="loading" v-if="showLoading">
 		<div class="running-con">
-			<img src="../assets/images/running.gif" mode=""></img>
-			<p>RUNNING...</p>
+			<img src="../assets/images/running.png" mode=""></img>
+			<p>{{loadingText}}</p>
 			<p>ETA: {{ formatTime(timeLeft) }}</p>
 
 		</div>
@@ -16,10 +16,14 @@ const props = defineProps({
 	showLoading: {
 		type: Boolean,
 		default: false
+	},
+	loadingText: {
+		type: String,
+		default: 'Generating speech'
 	}
 });
 
-const timeLeft = ref(30);
+const timeLeft = ref(30 * 1.2);
 let timer;
 
 const startCountdown = () => {
@@ -33,9 +37,10 @@ const startCountdown = () => {
 };
 
 const formatTime = (seconds) => {
-	const hours = Math.floor(seconds / 3600);
-	const minutes = Math.floor((seconds % 3600) / 60);
-	const secs = seconds % 60;
+	let ceil_seconds = Math.ceil(seconds)
+	const hours = Math.floor(ceil_seconds / 3600);
+	const minutes = Math.floor((ceil_seconds % 3600) / 60);
+	const secs = ceil_seconds % 60;
 	return `${padZero(hours)}:${padZero(minutes)}:${padZero(secs)}`;
 };
 
@@ -64,7 +69,7 @@ onUnmounted(() => {
 	z-index: 100;
 	height: 100%;
 	width: 100%;
-	background: #FFFFFF;
+	background: #141414;
 	opacity: 0.93;
 	display: flex;
 	justify-content: center;
@@ -72,27 +77,25 @@ onUnmounted(() => {
 }
 
 .running-con {
-	width: 56vw;
-	height: 25.07vw;
-	background: #000000;
-	border-radius: 4.27vw;
-	border: .13vw solid #707070;
+	width: 58.67vw;
+	height: 48vw;
+	background: #3D3D3D;
+	border-radius: 5.33vw;
 	display: flex;
 	flex-direction: column;
-	justify-content: flex-end;
 	align-items: center;
 	position: relative;
-	padding: 5.6vw 0;
+	padding: 21.07vw 0 5.6vw;
 	box-sizing: border-box;
 }
 
 .running-con img {
-	width: 22.4vw;
-	height: 38.4vw;
+	width: 30.93vw;
+	height: 25.6vw;
 	position: absolute;
 	left: 50%;
 	transform: translateX(-50%);
-	top: -28vw;
+	top: -9.6vw;
 }
 
 .running-con p {
@@ -104,6 +107,7 @@ onUnmounted(() => {
 	font-style: normal;
 	text-transform: none;
 	display: flex;
-	/* margin-top: 32rpx; */
+	line-height: 8.53vw;
+	/* margin-bottom: 4.27vw; */
 }
 </style>
