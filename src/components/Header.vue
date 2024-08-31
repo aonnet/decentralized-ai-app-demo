@@ -91,9 +91,9 @@ const balance = async () => {
 		let user = new User()
 		let result = await user.balance()
 		// console.log("Header balance ", result)
-		if (result && result._balances && result._balances.length) {
-			let temp = result._balances[0]
-			balanceValue.value = temp / 1000000000000000000n
+		if (result && result.code == 200 && result.data && result.data.length) {
+			let asset = result.data[0]
+			balanceValue.value = asset.balance / asset.unit
 		}
 		// console.log("Header balanceValue.value ", balanceValue.value)
 		localStorage.setItem("aon_balance",balanceValue.value)

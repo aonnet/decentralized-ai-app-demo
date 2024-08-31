@@ -5,7 +5,7 @@
 				<img class="ava" src="../assets/icons/user.png" mode=""></img>
 				<div class="ava-con-r">
 					<text class="userId">user-125482</text>
-					<text class="address">
+					<text class="address" v-if="account && account.length">
 						{{ account }}
 						<img class="copy" src="../assets/icons/copy.png" @click="handleCopy" mode="" />
 					</text>
@@ -13,14 +13,14 @@
 			</div>
 			<img @click="goToComplete" class="person-banner" src="../assets/images/personBanner.png" mode=""></img>
 
-			<!-- <div class="myWork">
+			<div class="myWork">
 				<text>My work</text>
-				<div class="waterfall">
-					<div class="waterfall-column" v-for="(column, index) in columns" :key="index">
-						<img v-for="item in column" :key="item.id" :src="item.src" class="waterfall-item" />
+				<div class="columns">
+					<div class="column-item" v-for="(column, index) in columns" :key="index">
+						<img :src="column.url" />
 					</div>
 				</div>
-			</div> -->
+			</div>
 
 			<div class="bottom_btn">
 				<button @click="goToCreate">
@@ -37,13 +37,16 @@ import {
 	onMounted
 } from 'vue';
 import { useRouter } from 'vue-router'
-import { Options, User, detectEthereumProvider } from 'aonweb'
+import { AI, User } from 'aonweb'
 import { showToast, showLoadingToast, closeToast } from 'vant';
 import bus from '../eventBus.js';
+import {loadAppData} from '../lib/loadApp'
 
 const router = useRouter()
 
 const account = ref('')
+const columns = ref([])
+const user_id = ref('')
 
 const handleCopy = async () => {
 	try {
@@ -66,44 +69,92 @@ function goToComplete() {
 	})
 }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+async function mywork() {
+	try {
+		let rawAppData = await loadAppData(window.location.origin)
+		// if (!rawAppData) {
+		// 	showToast("app config error")
+		// 	return
+		// }
+
+		const aonet = new AI({
+			app_key: (rawAppData && rawAppData.id) || import.meta.env.VITE_APPID,
+		})
+		let user = new User()
+		let temp = await user.islogin()
+		console.log("temp = ",temp)
+		if (!temp) {
+			return []
+		}
+
+		let response = await aonet.list()
+		console.log("mywork response = ", response)
+		let returnData = []
+		if (response && response.length) {
+			let data = response
+			if (data instanceof Array) {
+				for (let i = 0; i < data.length; i++) {
+					let task = data[i]
+					if (task.result && task.result instanceof Array) {
+						for (let m = 0; m < task.result.length; m++) {
+							let temp = task.result[m]
+							returnData.push(temp)
+						}
+					}
+					if (task.result && typeof task.result == 'string') {
+						returnData.push(task.result)
+					}
+				}
+			}
+		}
+		columns.value = returnData.map((item, index) => {
+			const widthStart = item.indexOf('width=') + 6;
+			const widthEnd = item.indexOf('&');
+			const width = parseInt(item.substring(widthStart, widthEnd)) || 680;
+
+			const heightStart = item.indexOf('height=') + 7;
+			const height = parseInt(item.substring(heightStart)) || 732;
+			let obj = {
+				url: item,
+				width,
+				height
+			}
+
+			console.log("mywork obj = ", obj)
+			return obj
+		})
+	} catch (error) {
+		console.log("mywork error = ", error)
+	}
 }
 
 async function login() {
 	try {
 		let time = new Date().getTime()
-		console.log(`demo user login start time = ${time}`)
+		console.log(`demo index login start time = ${time}`)
 		let user = new User()
 		let temp = await user.islogin()
+		console.log(`demo index islogin end time = ${time}, temp =`, temp)
 		if (!temp) {
 			showLoadingToast({
 				duration: 0,
 				forbidClick: true,
 				message: 'Loading...',
 			});
-			for (let i = 0; i < 5; i++) {
-			// console.log("getOwnedUsers i = ",i)
-				let result = await user.getOwnedUsers()
-				let userid = result && result._userIds && result._userIds.length && result._userIds[0]
-				if (userid && userid.length) {
-					break
-				}
-				await sleep(300)       
-			}
+			console.log(`demo index showLoadingToast end time = ${time}`)
+			temp = await user.login()
+			console.log(`demo index login end time = ${time}`)
 			closeToast();
-			temp = await user.islogin()
 			if (!temp) {
 				showToast("login failed,please try again later");
 				return
 			}
 		}
-		let ethereum = await detectEthereumProvider()
-		let get_account = await ethereum.request({ method: 'eth_requestAccounts' })
-		get_account = get_account[0]
-		account.value = get_account
+		user_id.value = 'user-' + getSubstring(temp.id)
+		account.value = temp.profiles && temp.profiles.account
 		bus.emit('get_balance', "login");
-		console.log(`demo user login end time = ${new Date().getTime() - time}`)
+		console.log(`demo index login end time = ${new Date().getTime() - time}`)
+		mywork()
 	} catch (error) {
 		console.log("index demo error", error)
 		closeToast();
@@ -115,6 +166,15 @@ async function login() {
 	} finally {
 	}
 }
+
+function getSubstring(str) {
+	if (str.length > 6) {
+		return str.substring(0, 6);
+	} else {
+		return str;
+	}
+}
+
 
 onMounted(() => {
 	login()

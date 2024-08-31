@@ -60,8 +60,8 @@
 							</div>
 							<div v-if="form.ui_type == 'select'">
 								<div class="templateCon"
-									v-if="appData.params_value.ui[page_config.title][key][key1] && appData.params_value.ui[page_config.title][key][key1].length > 0">
-									<div v-for="(item, index) in appData.params_value.ui[page_config.title][key][key1]"
+									v-if="form.options && form.options.length > 0">
+									<div v-for="(item, index) in form.options"
 										:class="`template_item ${item.selected ? 'templateActive' : ''}`"
 										@click="selectTemplate(item)" :key="index">
 
@@ -114,7 +114,7 @@ import { useImageStore } from '@/store/imageStore';
 import 'vant/lib/index.css';
 import Loading from '../components/Loading.vue';
 import bus from '../eventBus.js';
-import { loadAppData } from '../lib/loadApp'
+import { loadAppData,needLoadData,findKey,findParentKey, upload } from '../lib/loadApp'
 
 const router = useRouter()
 const imageStore = useImageStore();
@@ -145,22 +145,21 @@ const onOversize = (file) => {
 	showToast('文件大小不能超过 30MB');
 };
 
-function afterRead(file, detail) {
+async function afterRead(file, detail) {
+	console.log('afterRead = ',file.file,detail)
 	const formData = new FormData();
 	formData.append('file', file.file);
 
 	// 调用上传接口
-	uploadFile(formData).then(res => {
-		if (res.code == 200 && res.data && res.data.length) {
-			imageStore.addImage(res.data);
-			// let data = rawAppData.params_value.ui[page_config.title].main[detail.name]
-			// let deal = data && data.length && data[0]
-			file.remote_url = res.data
-		}
-	}).catch(err => {
+	let key = 'watermark/' + new Date().getTime() + file.file.name
+	try {
+		let url = await upload(key, file.file)
+		imageStore.addImage(url);
+		file.remote_url = url
+	} catch (error) {
 		showToast('image upload failed');
-		console.log(err);
-	});
+		console.log(error);
+	}
 }
 // 上传接口
 const uploadFile = async (formData) => {
@@ -174,26 +173,49 @@ const uploadFile = async (formData) => {
 };
 
 function deleteImg() {
-	// if (imageStore.uploadedImageUrl) {
-	// 	const formData = new FormData();
-	// 	formData.append('file', imageStore.uploadedImageUrl);
-
-	// 	// 删除文件
-	// 	formData.delete('file');
-
-	// 	imageStore.removeImage();
-
-	// 	console.log('File deleted:', formData.get('file'));
-	// } else {
-	// 	console.log('No file to delete')
-	// }
 	if (appData.params_value && appData.params_value.ui) {
 		appData.params_value.ui.body[key][key1] = []
 	}
 }
 
+function find_prompt(paths,obj) {
+	console.log('find_prompt = ',paths,obj)
+	let path = paths.shift()
+	console.log('find_prompt path = ',path)
+	let ref_data = obj[path]
+	console.log('find_prompt ref_data = ',ref_data)
+	if (path == paths[paths.length - 1] || (ref_data && !(ref_data instanceof Object))){
+		return  ref_data
+	}
+	return find_prompt(paths,ref_data)
+}
+
+function findWatermarkKey(obj) {
+    const keys= [];
+
+    function recurse(currentObj, parentKey) {
+        if (typeof currentObj === 'object' && currentObj !== null) {
+            for (let key in currentObj) {
+                if (key === 'watermark' && currentObj[key]) {
+                    keys.push(parentKey);
+                } else if (typeof currentObj[key] === 'object') {
+                    recurse(currentObj[key], key);
+                }
+            }
+        }
+    }
+
+    recurse(obj, null);
+    return keys;
+}
+
 const formSubmit = async () => {
 	console.log(imageStore.uploadedImageUrl)
+	let rawAppData = toRaw(appData.value)
+	if (!rawAppData) {
+		showToast("app config error")
+		return
+	}
 	if (!imageStore.uploadedImageUrl) {
 		showError.value = true
 
@@ -227,73 +249,70 @@ const formSubmit = async () => {
 		}
 		// let male = await male_or_famale()
 
-		let select_item = null
-		let clothings = rawAppData.params_value.ui[page_config_temp.title].main.clothing
-		clothings.forEach((item => {
-			if (item.selected) {
-				select_item = item
-				return false
+		const aonet = new AI({
+			app_key: rawAppData.id || import.meta.env.VITE_APPID,
+		})
+		let ui = rawAppData.params_value.ui
+		console.log("ui = ",ui)
+		
+		let current_ai = rawAppData.params_value.ai
+		let models = Object.keys(current_ai)
+		console.log("models = ",models)
+		let data = {}
+		for (let i = 0; i < models.length; i++) {
+			let model = models[i]
+			data[model] = current_ai[model]
+			let keys = Object.keys(data[model])
+			console.log("keys = ",keys)
+			for (let m = 0; m < keys.length; m++){
+				let key = keys[m]
+				console.log("key = ",key)
+				let temp = data[model][key]
+				console.log("temp = ",temp)
+				if (temp && temp instanceof Object) {
+					let key_data = null
+					let ref_raw = temp['$ref']
+					if (ref_raw) {
+						if (ref_raw.indexOf("$") > -1) {
+							key_data = eval(ref_raw)
+						} else {
+							let ref = ref_raw.split('/')
+							console.log("ref = ",ref)
+							let ref_data = find_prompt(ref,rawAppData.params_value)
+							console.log("ref_data = ",ref_data)
+							key_data = ref_data
+							if (ref_data && ref_data.indexOf('$') > -1) {
+								key_data = eval(ref_data)
+							}
+						} 
+					}
+					console.log("key_data = ",key_data)
+					data[model][key] = key_data
+				}
 			}
-		}))
-		let prompt_input = (select_item && select_item.value.prompt) || ''
-		console.log("prompt_input = ", prompt_input)
-		prompt_input = 'use the face in  main_face_image and use the clothing in auxiliary_face_image1,' + prompt_input
+		}
 
 		showLoading.value = true
 
-		const ai_options = new AIOptions({
-			appId: 'k3ebyfaSz8b87xJb_VyEGXx_AJ0MM8ngqU7Ym3AKeW8A',
-			// ai_server:'http://localhost:8088'
-		})
-
-		const aonet = new AI(ai_options)
-
-		let ai_config = rawAppData.params_value && rawAppData.params_value.ai && rawAppData.params_value.ai['pulid']
-		console.log('ai_config =', ai_config)
-		const data = {
-			input: {
-				"prompt": prompt_input,
-				"cfg_scale": ai_config.cfg_scale,
-				"num_steps": ai_config.num_steps,
-				"image_width": ai_config.image_width,
-				"num_samples": ai_config.num_samples,
-				"image_height": ai_config.image_height,
-				"output_format": ai_config.output_format,
-				"identity_scale": ai_config.identity_scale,
-				"mix_identities": ai_config.mix_identities,
-				"output_quality": ai_config.output_quality,
-				"generation_mode": ai_config.generation_mode,
-				"main_face_image": image_url,
-				"auxiliary_face_image1": select_item && select_item.value && select_item.value.image,
-				"negative_prompt": ai_config.negative_prompt
-			}
-		}
 		console.log("formSubmit data", data)
 		let price = 8
-		let response = await aonet.prediction("/predictions/ai/pulid", data, price)
+		let response = await aonet.prediction(models, data)
 		console.log("test", response)
+		showLoading.value = false
+		let responseData = null
 		if (response && response.code == 200 && response.data) {
-			response = response.data
+			responseData = response.data[0]
 		}
-		if (response.task.exec_code == 200 && response.task.is_success) {
-			showLoading.value = false
-
-			let url = response.output
-			if (Array.isArray(response.output)) {
-				url = response.output && response.output.length && response.output[0]
-			}
-			if (typeof url == 'object' || typeof url == 'Object') {
-				return
-			}
-
+		if (responseData && responseData.result) {
+			let url = responseData.result && responseData.result.length && responseData.result[0]
+			console.log('responseData.result = ',responseData.result)
 			goToComplete(url)
 		} else {
 			showLoading.value = false
-			let task_error = response && response.task && response.task.task_error
-			let api_error = response && response.task && response.task.api_error
 			let message = response && response.message
-			let msg = task_error || api_error || message
-			showToast(msg || 'AI processing failed')
+			let msg = responseData && responseData.error
+			let show = message || msg
+			showToast(show || 'AI processing failed')
 		}
 	} catch (error) {
 		showLoading.value = false
@@ -308,43 +327,50 @@ const formSubmit = async () => {
 
 }
 
-async function getTemplateList() {
-	try {
-		const list = await getTemplate()
-		templateList.value = list
-		prompt.value = list[0].prompt
-	} catch (error) {
-		console.log(error)
-	}
-}
-
 function selectTemplate(item) {
 	console.log("selectTemplate = ", item)
 	let rawAppData = toRaw(appData.value)
 	if (!rawAppData) {
 		return
 	}
-	let page_config_temp = toRaw(page_config.value)
-	for (const key in page_config_temp.properties) {
-		let value = page_config_temp.properties[key]
-		if (value && value.ui_type == 'main') {
-			for (const key1 in value.properties) {
-				let form = value.properties[key1]
-				if (form && form.ui_type == 'select') {
-					let temp = rawAppData.params_value.ui[page_config_temp.title][key][key1]
-					for (let i = 0; i < temp.length; i++) {
-						let loaction = temp[i]
-						loaction.selected = false
-					}
-				}
-			}
-		}
+	let keys = needLoadData(rawAppData)
+	let key = keys && keys.length && keys[0]
+	
+
+	let key_data = findKey(rawAppData.template_params,key)
+	console.log("selectTemplate options = ",key_data)
+	for (let i = 0; i < key_data.options.length; i++) {
+		let loaction = key_data.options[i]
+		loaction.selected = false
 	}
 	item.selected = true
-}
 
-function sleep(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
+	let data = findParentKey(rawAppData.params_value,key)
+	console.log("selectTemplate findParentKey = ",data)
+
+	let temp_selected_item = toRaw(item)
+	let selected_item = JSON.parse(JSON.stringify(temp_selected_item))
+	console.log("selectTemplate selected_item = ",selected_item)
+	data[key] = selected_item
+
+	if (!selected_item.value) {
+		showToast('material data is error: value is null')
+		return
+	}
+	let ui = rawAppData.params_value.ui
+	console.log("ui = ",ui)
+	let material_value = selected_item.value
+	let material_value_keys = Object.keys(material_value)
+	for (let i = 0; i < material_value_keys.length; i++) {
+		let key = material_value_keys[i]
+		console.log('selected_item[key] = ',key,typeof material_value[key],material_value[key])
+		if (material_value[key] && typeof material_value[key] == 'string' && material_value[key].indexOf("${") > -1) {
+			const regex = /\${(\w+)}/;
+			const match = material_value[key].match(regex);
+			material_value[key] = eval(material_value[key])
+		}
+		console.log('selected_item[key] 1111 = ',material_value[key])
+	}
 }
 
 async function login() {
@@ -361,17 +387,8 @@ async function login() {
 				message: 'Loading...',
 			});
 			console.log(`demo index showLoadingToast end time = ${time}`)
-			for (let i = 0; i < 5; i++) {
-				// console.log("getOwnedUsers i = ",i)
-				let result = await user.getOwnedUsers()
-				let userid = result && result._userIds && result._userIds.length && result._userIds[0]
-				if (userid && userid.length) {
-					break
-				}
-				await sleep(300)
-			}
+			temp = await user.login()
 			closeToast();
-			temp = await user.islogin()
 			if (!temp) {
 				showToast("login failed,please try again later");
 				return
@@ -391,8 +408,30 @@ async function login() {
 	}
 }
 
+function recursiveSortProperties(obj) {
+  // Check if the current object has properties
+  if (obj && typeof obj === 'object' && obj.hasOwnProperty('properties')) {
+    // Step 1: Convert the properties object to an array of key-value pairs
+    const entries = Object.entries(obj.properties);
+
+    // Step 2: Sort the array based on the 'index' of each property
+    const sortedEntries = entries.sort(([, a], [, b]) => (a['index'] || 0) - (b['index'] || 0));
+
+    // Step 3: Convert the sorted array back into an object
+    obj.properties = Object.fromEntries(sortedEntries);
+  }
+
+  // Recursively call the function on all nested objects
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key) && typeof obj[key] === 'object') {
+      recursiveSortProperties(obj[key]);
+    }
+  }
+}
+
 async function load() {
 	let temp = await loadAppData(window.location.origin)
+	recursiveSortProperties(temp.template_params.ui)
 	let temp_ = JSON.parse(JSON.stringify({ ...temp }));
 	console.log("index load = ", temp_)
 	// temp = sortObjectByIndex(temp)
@@ -405,12 +444,13 @@ async function load() {
 		}
 	});
 	appData.value = temp_
+	let title = temp_ && temp_.params_value && temp_.params_value.ui && temp_.params_value.ui.head && temp_.params_value.ui.head.title
+	document.title = title ? title : document.title
 }
 
 
 onMounted(() => {
 	load()
-	getTemplateList()
 	login()
 })
 
