@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.1",
-    "aonweb": "^2.0.1",
+    "aonweb": "^2.0.2",
     "aos": "^2.3.4",
     "axios": "^1.6.8",
     "element-plus": "^2.7.5",
