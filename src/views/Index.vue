@@ -235,17 +235,40 @@ const formSubmit = async () => {
 			return
 		}
 		let page_config_temp = toRaw(page_config.value)
-		console.log('rawAppData.params_value.ui[page_config.title] = ', rawAppData.params_value.ui[page_config_temp.title], page_config_temp)
-		let images = rawAppData.params_value.ui[page_config_temp.title].main.image
-		let image_url = null
-		if (images && images.length) {
-			let img = images[0]
-			img = toRaw(img)
-			image_url = img.remote_url
-		}
-		if (!(image_url && image_url.length)) {
-			showToast('Please uplaod a photo')
-			return
+		// console.log('rawAppData.params_value.ui[page_config.title] = ', rawAppData.params_value.ui[page_config_temp.title], page_config_temp)
+		let main = rawAppData.params_value.ui[page_config_temp.title].main
+		// let image_url = null
+		// if (images && images.length) {
+		// 	let img = images[0]
+		// 	img = toRaw(img)
+		// 	image_url = img.remote_url
+		// }
+		// if (!(image_url && image_url.length)) {
+		// 	showToast('Please uplaod a photo')
+		// 	return
+		// }
+
+		let find_data = main
+		console.log("find_data = ",find_data)
+		let keys = Object.keys(find_data)
+		for (let i = 0; i < keys.length; i++) {
+			let key = keys[i]
+			let temp =  findKey(rawAppData.template_params,key)
+			console.log("formSubmit Object findKey = ",key,temp)
+			if (temp.ui_type == 'upload' && temp.show != 'nodisplay') {
+				if (!find_data[key] || !(find_data[key] && find_data[key].length)) {
+					if (temp.toast && temp.toast.length) {
+						showToast(temp.toast)
+						return
+					}
+				}
+			}
+			if (!find_data[key] && temp.show != 'nodisplay') {
+				if (temp.toast && temp.toast.length) {
+					showToast(temp.toast)
+					return
+				}
+			}
 		}
 		// let male = await male_or_famale()
 
