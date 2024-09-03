@@ -1,13 +1,14 @@
 console.log(import.meta.env.VITE_APPID);
 
 
-import {supabase,getVersion} from 'aonweb'
+import {supabase,getVersion,call_eage_function} from 'aonweb'
 
 let version = getVersion()
 
 console.log("sdk version = ",version)
 
 let appData = null
+let visit_count_updated = false
 
 function extractSubdomainOrDomain(url) {
     // 去掉 'https://' 或 'http://'
@@ -233,6 +234,10 @@ export async function loadAppData(domain) {
         }
         appData = temp
     }
+    if (appData && !visit_count_updated) {
+        update_visit_count(appData)
+        visit_count_updated = true
+    }
     return appData
 }
 
@@ -247,4 +252,22 @@ export async function upload(filename,file) {
     const {data:publicurl,error:getURlError} = await supabase.storage.from('prediction_result').getPublicUrl(filename)
     if (getURlError) throw getURlError;
     return publicurl. publicUrl
+}
+
+async function update_visit_count(app) {
+    if (app) {
+        call_eage_function('update_visit_count',{
+            app_key:app.id,
+            column:'visit_count'
+        })
+    }
+}
+
+export async function update_run_count() {
+    if (appData) {
+        call_eage_function('update_visit_count',{
+            app_key:appData.id,
+            column:'run_count'
+        })
+    }
 }

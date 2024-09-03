@@ -114,7 +114,7 @@ import { useImageStore } from '@/store/imageStore';
 import 'vant/lib/index.css';
 import Loading from '../components/Loading.vue';
 import bus from '../eventBus.js';
-import { loadAppData,needLoadData,findKey,findParentKey, upload } from '../lib/loadApp'
+import { loadAppData,needLoadData,findKey,findParentKey, upload,update_run_count } from '../lib/loadApp'
 
 const router = useRouter()
 const imageStore = useImageStore();
@@ -319,6 +319,7 @@ const formSubmit = async () => {
 
 		console.log("formSubmit data", data)
 		let price = 8
+		update_run_count()
 		let response = await aonet.prediction(models, data)
 		console.log("test", response)
 		showLoading.value = false
