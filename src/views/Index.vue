@@ -1,5 +1,5 @@
 <template>
-	<Loading v-if="showLoading" :showLoading="showLoading" />
+	<Loading v-if="showLoading" :showLoading="showLoading" :loadPercent="loadPercent" />
 	<div>
 		<!-- 页面内容 -->
 		<div class="container">
@@ -120,6 +120,7 @@ const router = useRouter()
 const imageStore = useImageStore();
 
 const showLoading = ref(false);
+const loadPercent = ref(0);
 const showError = ref(false);
 const prompt = ref('');
 const templateList = ref([]);
@@ -135,10 +136,15 @@ const maxSize = 30 * 1024 * 1024;
 
 function goToComplete(url) {
 	const query = { url: url }
-	router.push({
-		path: '/created',
-		query
-	})
+
+	loadPercent.value = 100
+	setTimeout(() => {
+		showLoading.value = false
+		router.push({
+			path: '/created',
+			query
+		})
+	}, 800);
 }
 
 const onOversize = (file) => {
@@ -322,7 +328,6 @@ const formSubmit = async () => {
 		update_run_count()
 		let response = await aonet.prediction(models, data)
 		console.log("test", response)
-		showLoading.value = false
 		let responseData = null
 		if (response && response.code == 200 && response.data) {
 			responseData = response.data[0]

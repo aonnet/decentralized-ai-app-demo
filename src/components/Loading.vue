@@ -1,11 +1,12 @@
 <template>
 	<div class="loading" v-if="showLoading">
-		<div class="running-con">
+		<!-- <div class="running-con">
 			<img src="../assets/images/running.png" mode=""></img>
-			<p>{{loadingText}}</p>
+			<p>Generating images</p>
 			<p>ETA: {{ formatTime(timeLeft) }}</p>
+		</div> -->
+		<el-progress type="circle" :percentage="loadPercent ? loadPercent : percent" color="#2EE9D0" />
 
-		</div>
 	</div>
 </template>
 
@@ -17,20 +18,34 @@ const props = defineProps({
 		type: Boolean,
 		default: false
 	},
-	loadingText: {
-		type: String,
-		default: 'Generating speech'
+	loadPercent: {
+		type: Number,
+		default: 0
 	}
 });
 
-const timeLeft = ref(30 * 1.2);
+const percent = ref(0);
+// test time： 7 -15s
+const timeLeft = ref(15 * 1.2);
+const countdown = ref(15 * 1.2);
 let timer;
+
+const getRandomIncrement = () => {
+	return Math.floor(Math.random() * 10) + 1; // 随机生成 1 到 10 之间的整数
+};
 
 const startCountdown = () => {
 	timer = setInterval(() => {
 		if (timeLeft.value > 0) {
+			// percent.value = Math.floor(Math.min(95, ((countdown.value - timeLeft.value + 1) / countdown.value) * 100));
+			
+			const increment = getRandomIncrement();
+			if (percent.value < 95) {
+				percent.value = Math.min(percent.value + increment, 95); // 确保不超过95%
+			}
 			timeLeft.value--;
 		} else {
+			percent.value = 95;
 			clearInterval(timer);
 		}
 	}, 1000);
@@ -62,6 +77,10 @@ onUnmounted(() => {
 </script>
 
 <style>
+.el-progress__text {
+	color: #fff !important;
+}
+
 .loading {
 	position: fixed;
 	top: 0;
