@@ -232,4 +232,46 @@ onMounted(() => {
 	font-style: normal;
 	text-transform: none;
 }
+
+@media screen and (min-width: 1024px) {
+	.custom-navbar {
+		min-height: 50px;
+		padding: 14px 24px;
+		margin-bottom: 24px;
+	}
+
+	.logo {
+		width: 28px;
+		height: 28px;
+		margin-right: 8px;
+	}
+
+
+	.title {
+		font-size: 20px;
+	}
+
+	.right {
+		min-width: 80px;
+		height: 28px;
+		padding: 0 4px;
+		border-radius: 80px;
+	}
+
+	.right .right_count .moneyIcon,
+	.right .userIcon {
+		height: 20px;
+		width: 20px;
+		margin-right: 2px;
+	}
+
+	.right .userIcon {
+		margin-right: 0;
+		margin-left: 2px;
+	}
+
+	.right .count {
+		font-size: 12px;
+	}
+}
 </style>

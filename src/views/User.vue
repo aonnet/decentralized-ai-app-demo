@@ -14,19 +14,19 @@
 			<img @click="goToComplete" class="person-banner" src="../assets/images/personBanner.png" mode=""></img>
 
 			<div class="myWork">
-				<text>My work</text>
+				<text class="tit">My work</text>
 				<div class="columns">
 					<div class="column-item" v-for="(column, index) in columns" :key="index">
 						<img :src="column.url" />
 					</div>
 				</div>
 			</div>
+		</div>
 
-			<div class="bottom_btn">
-				<button @click="goToCreate">
-					Go To Create
-				</button>
-			</div>
+		<div class="bottom_btn">
+			<button @click="goToCreate">
+				Go To Create
+			</button>
 		</div>
 	</div>
 </template>
@@ -40,7 +40,7 @@ import { useRouter } from 'vue-router'
 import { AI, User } from 'aonweb'
 import { showToast, showLoadingToast, closeToast } from 'vant';
 import bus from '../eventBus.js';
-import {loadAppData} from '../lib/loadApp'
+import { loadAppData } from '../lib/loadApp'
 
 const router = useRouter()
 
@@ -82,7 +82,7 @@ async function mywork() {
 		})
 		let user = new User()
 		let temp = await user.islogin()
-		console.log("temp = ",temp)
+		console.log("temp = ", temp)
 		if (!temp) {
 			return []
 		}
@@ -281,27 +281,27 @@ onMounted(() => {
 } */
 
 .columns {
-  column-count: 2;
-  column-gap: 6.4vw;
+	column-count: 2;
+	column-gap: 6.4vw;
 }
 
 .column-item {
-  width: 40vw;
-  break-inside: avoid;
-  overflow: hidden;
-  margin-bottom: 6.4vw;
+	width: 40vw;
+	break-inside: avoid;
+	overflow: hidden;
+	margin-bottom: 6.4vw;
 }
 
 .column-item img {
-  width: 100%;
-  display: block;
-  object-fit: cover;
+	width: 100%;
+	display: block;
+	object-fit: cover;
 }
 
 button {
 	width: 100%;
 	height: 9.07vw;
-	background: linear-gradient( 117deg, #43E8A0 0%, #8AF25F 100%);
+	background: linear-gradient(117deg, #43E8A0 0%, #8AF25F 100%);
 	box-shadow: 2.13vw 2.13vw 4.27vw .27vw rgba(0, 0, 0, 0.32);
 
 	border-radius: 1.07vw;
@@ -313,5 +313,79 @@ button {
 	text-align: center;
 	font-style: normal;
 	text-transform: none;
+}
+
+@media screen and (min-width: 1024px) {
+	.ava-con {
+		margin-top: 32px;
+	}
+
+	.ava-con .ava {
+		height: 86px;
+		width: 86px;
+		margin-right: 16px;
+	}
+
+	.ava-con-r {
+		width: 225px;
+	}
+
+	.ava-con-r text {
+		font-size: 14px;
+		color: #fff;
+		line-height: 21px;
+	}
+
+	.ava-con-r .userId {
+		font-size: 16px;
+		line-height: 16px;
+		margin-bottom: 12px;
+		margin-top: 14px;
+		text-transform: uppercase;
+	}
+
+	.copy {
+		height: 12px;
+		width: 12px;
+	}
+
+	.person-banner {
+		width: 100%;
+		height: 100%;
+		margin: 22.5px 0 0;
+	}
+
+	.myWork {
+		width: 100%;
+		margin-top: 30px;
+		padding-bottom: 75px;
+		min-height: 40vh;
+	}
+
+	.myWork .tit {
+		font-size: 16px;
+		margin-bottom: 15.5px;
+	}
+
+	.columns {
+		min-height: 200px;
+		column-count: 2;
+		column-gap: 24px;
+	}
+
+	.column-item {
+		width: 150px;
+		margin-bottom: 24px;
+	}
+
+	button {
+		width: 100%;
+		height: 34px;
+		background: linear-gradient(117deg, #43E8A0 0%, #8AF25F 100%);
+		box-shadow: 8px 8px 16px 1px rgba(0, 0, 0, 0.32);
+
+		border-radius: 4px;
+		font-size: 16px;
+	}
 }
 </style>

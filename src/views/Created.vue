@@ -14,10 +14,11 @@
 					<img src="../assets/icons/share.png" mode=""></img>
 				</div> -->
 			</div>
-			<div class="bottom_btn">
-				<button class="personalCenter" @click="goUser">Personal Center</button>
-				<button class="createMore" @click="goToCreate">Generate More</button>
-			</div>
+		</div>
+
+		<div class="bottom_btn">
+			<button class="personalCenter" @click="goUser">Personal Center</button>
+			<button class="createMore" @click="goToCreate">Generate More</button>
 		</div>
 	</div>
 </template>
@@ -189,5 +190,59 @@ button {
 	background: linear-gradient(117deg, #36CFC9 0%, #EF81FF 100%);
 	box-shadow: 2.13vw 2.13vw 4.27vw .27vw rgba(0, 0, 0, 0.32);
 	border-radius: 1.07vw;
+}
+
+@media screen and (min-width: 1024px) {
+	.created {
+		padding-top: 32px;
+		position: relative;
+	}
+
+	.resCon {
+		min-height: 454px;
+	}
+
+	.res_img {
+		max-height: 576px;
+	}
+
+	.handles {
+		padding-bottom: 75px;
+	}
+
+	.download {
+		width: 32px;
+		height: 32px;
+		border: 1px solid #FFFFFF;
+		margin-top: 24px;
+		margin-left: 20px;
+	}
+
+	.download img {
+		height: 20px;
+		width: 20px;
+	}
+
+	.bottom_btn {
+		padding: 10px 17px;
+	}
+
+	button {
+		font-size: 16px;
+		width: 160px;
+		height: 32px;
+	}
+
+	.createMore {
+		background: linear-gradient(117deg, #43E8A0 0%, #8AF25F 100%);
+		box-shadow: 8px 8px 16px 1px rgba(0, 0, 0, 0.32);
+		border-radius: 4px;
+	}
+
+	.personalCenter {
+		background: linear-gradient(117deg, #36CFC9 0%, #EF81FF 100%);
+		box-shadow: 8px 8px 16px 1px rgba(0, 0, 0, 0.32);
+		border-radius: 4px;
+	}
 }
 </style>

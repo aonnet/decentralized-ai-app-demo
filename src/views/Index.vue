@@ -2,8 +2,9 @@
 	<Loading v-if="showLoading" :showLoading="showLoading" :loadPercent="loadPercent" />
 	<div>
 		<!-- 页面内容 -->
-		<div class="container">
-			<div v-for="(value, key) in page_config && page_config.properties" :key="key">
+		<div :style="value.ui_type && value.ui_type.length && value.ui_type == 'footer' && value.show !== 'nodisplay' ? 'position: sticky; bottom: 0;' : ''"
+			v-for="(value, key) in page_config && page_config.properties" :key="key">
+			<div class="container">
 				<!-- {{ key }} -->
 				<div
 					v-if="value.ui_type && value.ui_type.length && value.ui_type == 'main' && value.show !== 'nodisplay'">
@@ -59,8 +60,7 @@
 									:placeholder="form.placeholder" />
 							</div>
 							<div v-if="form.ui_type == 'select'">
-								<div class="templateCon"
-									v-if="form.options && form.options.length > 0">
+								<div class="templateCon" v-if="form.options && form.options.length > 0">
 									<div v-for="(item, index) in form.options"
 										:class="`template_item ${item.selected ? 'templateActive' : ''}`"
 										@click="selectTemplate(item)" :key="index">
@@ -78,27 +78,28 @@
 						</div>
 					</div>
 				</div>
-				<div
-					v-if="value.ui_type && value.ui_type.length && value.ui_type == 'footer' && value.show !== 'nodisplay'">
-					<div v-for="(footer, key) in value.properties" :key="key">
-						<div
-							v-if="footer.ui_type && footer.ui_type.length && footer.show !== 'nodisplay' && footer.ui_type == 'button'">
-							<div class="bottom_btn">
-								<div class="spendCount">
-									<img class="icon" src="../assets/icons/money.png" mode=""></img>
-									<text>-{{ price }}</text>
-								</div>
-								<button :disabled="false" :class="`submitBtn ${false && 'submitBtn_disabled'}`"
-									@click="formSubmit">
-									<text>{{ footer.title }}</text>
-								</button>
+			</div>
+			<div
+				v-if="value.ui_type && value.ui_type.length && value.ui_type == 'footer' && value.show !== 'nodisplay'">
+				<div v-for="(footer, key) in value.properties" :key="key">
+					<div
+						v-if="footer.ui_type && footer.ui_type.length && footer.show !== 'nodisplay' && footer.ui_type == 'button'">
+						<div class="bottom_btn">
+							<div class="spendCount">
+								<img class="icon" src="../assets/icons/money.png" mode=""></img>
+								<text>-{{ price }}</text>
 							</div>
+							<button :disabled="false" :class="`submitBtn ${false && 'submitBtn_disabled'}`"
+								@click="formSubmit">
+								<text>{{ footer.title }}</text>
+							</button>
 						</div>
 					</div>
-
 				</div>
+
 			</div>
 		</div>
+
 	</div>
 </template>
 
@@ -114,7 +115,7 @@ import { useImageStore } from '@/store/imageStore';
 import 'vant/lib/index.css';
 import Loading from '../components/Loading.vue';
 import bus from '../eventBus.js';
-import { loadAppData,needLoadData,findKey,findParentKey, upload,update_run_count } from '../lib/loadApp'
+import { loadAppData, needLoadData, findKey, findParentKey, upload, update_run_count } from '../lib/loadApp'
 
 const router = useRouter()
 const imageStore = useImageStore();
@@ -152,7 +153,7 @@ const onOversize = (file) => {
 };
 
 async function afterRead(file, detail) {
-	console.log('afterRead = ',file.file,detail)
+	console.log('afterRead = ', file.file, detail)
 	const formData = new FormData();
 	formData.append('file', file.file);
 
@@ -184,35 +185,35 @@ function deleteImg() {
 	}
 }
 
-function find_prompt(paths,obj) {
-	console.log('find_prompt = ',paths,obj)
+function find_prompt(paths, obj) {
+	console.log('find_prompt = ', paths, obj)
 	let path = paths.shift()
-	console.log('find_prompt path = ',path)
+	console.log('find_prompt path = ', path)
 	let ref_data = obj[path]
-	console.log('find_prompt ref_data = ',ref_data)
-	if (path == paths[paths.length - 1] || (ref_data && !(ref_data instanceof Object))){
-		return  ref_data
+	console.log('find_prompt ref_data = ', ref_data)
+	if (path == paths[paths.length - 1] || (ref_data && !(ref_data instanceof Object))) {
+		return ref_data
 	}
-	return find_prompt(paths,ref_data)
+	return find_prompt(paths, ref_data)
 }
 
 function findWatermarkKey(obj) {
-    const keys= [];
+	const keys = [];
 
-    function recurse(currentObj, parentKey) {
-        if (typeof currentObj === 'object' && currentObj !== null) {
-            for (let key in currentObj) {
-                if (key === 'watermark' && currentObj[key]) {
-                    keys.push(parentKey);
-                } else if (typeof currentObj[key] === 'object') {
-                    recurse(currentObj[key], key);
-                }
-            }
-        }
-    }
+	function recurse(currentObj, parentKey) {
+		if (typeof currentObj === 'object' && currentObj !== null) {
+			for (let key in currentObj) {
+				if (key === 'watermark' && currentObj[key]) {
+					keys.push(parentKey);
+				} else if (typeof currentObj[key] === 'object') {
+					recurse(currentObj[key], key);
+				}
+			}
+		}
+	}
 
-    recurse(obj, null);
-    return keys;
+	recurse(obj, null);
+	return keys;
 }
 
 const formSubmit = async () => {
@@ -255,12 +256,12 @@ const formSubmit = async () => {
 		// }
 
 		let find_data = main
-		console.log("find_data = ",find_data)
+		console.log("find_data = ", find_data)
 		let keys = Object.keys(find_data)
 		for (let i = 0; i < keys.length; i++) {
 			let key = keys[i]
-			let temp =  findKey(rawAppData.template_params,key)
-			console.log("formSubmit Object findKey = ",key,temp)
+			let temp = findKey(rawAppData.template_params, key)
+			console.log("formSubmit Object findKey = ", key, temp)
 			if (temp.ui_type == 'upload' && temp.show != 'nodisplay') {
 				if (!find_data[key] || !(find_data[key] && find_data[key].length)) {
 					if (temp.toast && temp.toast.length) {
@@ -282,22 +283,22 @@ const formSubmit = async () => {
 			app_key: rawAppData.id || import.meta.env.VITE_APPID,
 		})
 		let ui = rawAppData.params_value.ui
-		console.log("ui = ",ui)
-		
+		console.log("ui = ", ui)
+
 		let current_ai = rawAppData.params_value.ai
 		let models = Object.keys(current_ai)
-		console.log("models = ",models)
+		console.log("models = ", models)
 		let data = {}
 		for (let i = 0; i < models.length; i++) {
 			let model = models[i]
 			data[model] = current_ai[model]
 			let keys = Object.keys(data[model])
-			console.log("keys = ",keys)
-			for (let m = 0; m < keys.length; m++){
+			console.log("keys = ", keys)
+			for (let m = 0; m < keys.length; m++) {
 				let key = keys[m]
-				console.log("key = ",key)
+				console.log("key = ", key)
 				let temp = data[model][key]
-				console.log("temp = ",temp)
+				console.log("temp = ", temp)
 				if (temp && temp instanceof Object) {
 					let key_data = null
 					let ref_raw = temp['$ref']
@@ -306,16 +307,16 @@ const formSubmit = async () => {
 							key_data = eval(ref_raw)
 						} else {
 							let ref = ref_raw.split('/')
-							console.log("ref = ",ref)
-							let ref_data = find_prompt(ref,rawAppData.params_value)
-							console.log("ref_data = ",ref_data)
+							console.log("ref = ", ref)
+							let ref_data = find_prompt(ref, rawAppData.params_value)
+							console.log("ref_data = ", ref_data)
 							key_data = ref_data
 							if (ref_data && ref_data.indexOf('$') > -1) {
 								key_data = eval(ref_data)
 							}
-						} 
+						}
 					}
-					console.log("key_data = ",key_data)
+					console.log("key_data = ", key_data)
 					data[model][key] = key_data
 				}
 			}
@@ -334,7 +335,7 @@ const formSubmit = async () => {
 		}
 		if (responseData && responseData.result) {
 			let url = responseData.result && responseData.result.length && responseData.result[0]
-			console.log('responseData.result = ',responseData.result)
+			console.log('responseData.result = ', responseData.result)
 			goToComplete(url)
 		} else {
 			showLoading.value = false
@@ -364,22 +365,22 @@ function selectTemplate(item) {
 	}
 	let keys = needLoadData(rawAppData)
 	let key = keys && keys.length && keys[0]
-	
 
-	let key_data = findKey(rawAppData.template_params,key)
-	console.log("selectTemplate options = ",key_data)
+
+	let key_data = findKey(rawAppData.template_params, key)
+	console.log("selectTemplate options = ", key_data)
 	for (let i = 0; i < key_data.options.length; i++) {
 		let loaction = key_data.options[i]
 		loaction.selected = false
 	}
 	item.selected = true
 
-	let data = findParentKey(rawAppData.params_value,key)
-	console.log("selectTemplate findParentKey = ",data)
+	let data = findParentKey(rawAppData.params_value, key)
+	console.log("selectTemplate findParentKey = ", data)
 
 	let temp_selected_item = toRaw(item)
 	let selected_item = JSON.parse(JSON.stringify(temp_selected_item))
-	console.log("selectTemplate selected_item = ",selected_item)
+	console.log("selectTemplate selected_item = ", selected_item)
 	data[key] = selected_item
 
 	if (!selected_item.value) {
@@ -387,18 +388,18 @@ function selectTemplate(item) {
 		return
 	}
 	let ui = rawAppData.params_value.ui
-	console.log("ui = ",ui)
+	console.log("ui = ", ui)
 	let material_value = selected_item.value
 	let material_value_keys = Object.keys(material_value)
 	for (let i = 0; i < material_value_keys.length; i++) {
 		let key = material_value_keys[i]
-		console.log('selected_item[key] = ',key,typeof material_value[key],material_value[key])
+		console.log('selected_item[key] = ', key, typeof material_value[key], material_value[key])
 		if (material_value[key] && typeof material_value[key] == 'string' && material_value[key].indexOf("${") > -1) {
 			const regex = /\${(\w+)}/;
 			const match = material_value[key].match(regex);
 			material_value[key] = eval(material_value[key])
 		}
-		console.log('selected_item[key] 1111 = ',material_value[key])
+		console.log('selected_item[key] 1111 = ', material_value[key])
 	}
 }
 
@@ -438,24 +439,24 @@ async function login() {
 }
 
 function recursiveSortProperties(obj) {
-  // Check if the current object has properties
-  if (obj && typeof obj === 'object' && obj.hasOwnProperty('properties')) {
-    // Step 1: Convert the properties object to an array of key-value pairs
-    const entries = Object.entries(obj.properties);
+	// Check if the current object has properties
+	if (obj && typeof obj === 'object' && obj.hasOwnProperty('properties')) {
+		// Step 1: Convert the properties object to an array of key-value pairs
+		const entries = Object.entries(obj.properties);
 
-    // Step 2: Sort the array based on the 'index' of each property
-    const sortedEntries = entries.sort(([, a], [, b]) => (a['index'] || 0) - (b['index'] || 0));
+		// Step 2: Sort the array based on the 'index' of each property
+		const sortedEntries = entries.sort(([, a], [, b]) => (a['index'] || 0) - (b['index'] || 0));
 
-    // Step 3: Convert the sorted array back into an object
-    obj.properties = Object.fromEntries(sortedEntries);
-  }
+		// Step 3: Convert the sorted array back into an object
+		obj.properties = Object.fromEntries(sortedEntries);
+	}
 
-  // Recursively call the function on all nested objects
-  for (const key in obj) {
-    if (obj.hasOwnProperty(key) && typeof obj[key] === 'object') {
-      recursiveSortProperties(obj[key]);
-    }
-  }
+	// Recursively call the function on all nested objects
+	for (const key in obj) {
+		if (obj.hasOwnProperty(key) && typeof obj[key] === 'object') {
+			recursiveSortProperties(obj[key]);
+		}
+	}
 }
 
 async function load() {
@@ -781,5 +782,281 @@ onMounted(() => {
 .template_item .active {
 	background: #2EE9D0;
 	color: #1C1C1C;
+}
+
+@media screen and (min-width: 1024px) {
+	.custom-radio-group {
+		display: flex;
+		justify-content: flex-start;
+	}
+
+	.custom-radio {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		margin-right: 60px;
+		flex: none;
+	}
+
+	.custom-radio .van-radio__icon--checked .van-icon {
+		background-color: #000;
+		border-color: #000;
+	}
+
+	.custom-radio .van-radio__label {
+		text-align: left;
+		color: #fff !important;
+	}
+
+	.uni-form-item .title {
+		font-family: Roboto-Bold;
+		font-weight: bold;
+		font-size: 16px;
+		color: #fff;
+		text-align: left;
+		margin-bottom: 8px;
+	}
+
+	.uni-form-item {
+		margin-bottom: 32px;
+	}
+
+	.uni-form-item .content {
+		width: 100%;
+		min-height: 56px;
+		background: #3B3939;
+		border-radius: 4px;
+		display: flex;
+		align-items: center;
+		padding: 0 12px;
+		box-sizing: border-box;
+	}
+
+	.uni-form-item .banner {
+		width: 100%;
+		height: 104px;
+		margin-top: 8px;
+		position: relative;
+		padding: 16px;
+		background: transparent;
+	}
+
+	.uni-form-item .banner img {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+	.uni-form-item .banner p {
+		position: relative;
+		z-index: 10;
+		font-family: Roboto-Black;
+		font-weight: 900;
+		font-size: 24px;
+		color: #FFFFFF;
+		text-align: left;
+	}
+
+	.uni-form-item .banner p:last-child {
+		width: 184px;
+		font-family: Roboto-Regular;
+		font-weight: 400;
+		font-size: 9px;
+		color: #FFFFFF;
+		line-height: 16px;
+		text-align: left;
+	}
+
+	.error-text {
+		width: 325px;
+		position: fixed;
+		bottom: 81px;
+	}
+
+	.error-text .content {
+		background-color: #F3A32B;
+		font-size: 12px;
+		color: #fff;
+	}
+
+	.uploadCon {
+		min-height: 145px;
+		display: flex;
+		background: #554F4F;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.uploadCon .upload {
+		height: 100%;
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.upload-before {
+		width: 100%;
+		display: flex;
+		align-items: center;
+	}
+
+	.upload-before text {
+		color: #fff;
+		font-size: 14px;
+		font-family: Roboto-Regular;
+	}
+
+	.upload-done {
+		justify-content: space-between;
+		position: relative;
+	}
+
+	.uploadIcon {
+		width: 32px;
+		height: 32px;
+		margin-right: 9px;
+	}
+
+	.upload-res {
+		width: 100%;
+		height: 112px;
+		object-fit: cover;
+	}
+
+	.deleteIcon {
+		height: 19px;
+		width: 19px;
+		position: absolute;
+		right: 8px;
+		top: 8px;
+	}
+
+	.bottom_btn .spendCount {
+		width: 72px;
+		height: 34px;
+		background: #3B3939;
+		border-radius: 4px;
+		display: flex;
+		z-index: 9;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.bottom_btn .spendCount .icon {
+		height: 24px;
+		width: 24px;
+		margin-right: 8px;
+	}
+
+	.bottom_btn .submitBtn {
+		width: 240px;
+		height: 34px;
+		background: linear-gradient(117deg, #43E8A0 0%, #36CFC9 100%);
+		box-shadow: 8px 8px 16px 2px rgba(0, 0, 0, 0.32);
+		border-radius: 4px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.bottom_btn .submitBtn text {
+		font-family: Roboto-Black;
+		font-size: 16px;
+		font-weight: bold;
+		color: #1C1C20;
+	}
+
+	.bottom_btn .submitBtn_disabled {
+		background: #434343;
+	}
+
+	.templateCon {
+		height: auto;
+		background: transparent;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: space-between;
+	}
+
+	.template_item {
+		height: auto;
+		width: 160px;
+		border-radius: 4px;
+		position: relative;
+		overflow: hidden;
+		box-sizing: border-box;
+		z-index: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		break-inside: avoid;
+		overflow: hidden;
+		margin-bottom: 24px;
+	}
+
+	.template_item .imgCon {
+		width: 100%;
+		height: 100%;
+	}
+
+	.template_item .imgCon img {
+		display: inline-block;
+		height: 100%;
+		min-height: 112px;
+		width: 100%;
+		object-fit: cover;
+	}
+
+	.template_item .text {
+		width: 100%;
+		height: 34px;
+		line-height: 34px;
+		background: #3B3939;
+		justify-content: flex-start;
+		align-items: center;
+		font-size: 12px;
+		font-family: Roboto-Bold;
+		color: #FFFFFF;
+		padding: 0 8px;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 1;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.templateActive {
+		border: 1px solid #2EE9D0;
+		color: #1C1C1C;
+	}
+
+	.isActiveIcon {
+		position: absolute;
+		bottom: 6px;
+		right: 6px;
+		width: 12px;
+		height: 12px;
+		background: #FFFFFF;
+		border: 1px solid #000000;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.isActiveIcon img {
+		height: 8px;
+		width: 8px;
+	}
+
+	.template_item .active {
+		background: #2EE9D0;
+		color: #1C1C1C;
+	}
 }
 </style>
