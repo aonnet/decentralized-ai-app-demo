@@ -27,14 +27,28 @@ function extractSubdomainOrDomain(url) {
     return '';
   }
 
-export async function loadApp(domain) {
+  export async function loadApp(domain,path) {
+    console.log('loadApp in = ',domain,path)
 
     let app_id = import.meta.env.VITE_APPID
+
     let flag = domain && domain.length && domain.indexOf('localhost') < 0
     if (flag) {
         let name = extractSubdomainOrDomain(domain)
         app_id = name
+        console.log("loadApp flag app_id",app_id)
     }
+    if (path) {
+        const params = new URLSearchParams(path);
+        let is_preview = params.get('is_preview')
+        let app_key = params.get('app_key')
+        console.log('loadApp is_preview = ',params,is_preview,app_key)
+        if (is_preview) {
+            flag = false
+            app_id = app_key
+        }
+    }
+    
     console.log("loadApp app_id",app_id)
     let temp = supabase.from('app')
     .select('*')
@@ -50,6 +64,7 @@ export async function loadApp(domain) {
     if (error) {
         return null
     }
+    // update_visit_count(app)
     return app
 }
 
@@ -221,9 +236,9 @@ export function findRefValues(obj) {
 }
 
 
-export async function loadAppData(domain) {
+export async function loadAppData(domain,path) {
     if (!appData) {
-        let temp  = await loadApp(domain)
+        let temp  = await loadApp(domain,path)
         let keys = needLoadData(temp)
     
         for (let i = 0; i < keys?.length; i++) {

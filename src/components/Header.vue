@@ -122,7 +122,10 @@ const checkIfUserPage = () => {
 };
 
 async function load() {
-	let temp = await loadAppData(window.location.origin)
+	let domain = window.location.origin
+	let href = window.location.href
+	console.log('window.location = ',window.location)
+	let temp = await loadAppData(domain,href)
 	let temp_ = JSON.parse(JSON.stringify({ ...temp }));
 	console.log("index load = ", temp_)
 	// temp = sortObjectByIndex(temp)

@@ -71,7 +71,9 @@ function goToComplete() {
 
 async function mywork() {
 	try {
-		let rawAppData = await loadAppData(window.location.origin)
+		let domain = window.location.origin
+		let href = window.location.href
+		let rawAppData = await loadAppData(domain,href)
 		// if (!rawAppData) {
 		// 	showToast("app config error")
 		// 	return

@@ -460,7 +460,9 @@ function recursiveSortProperties(obj) {
 }
 
 async function load() {
-	let temp = await loadAppData(window.location.origin)
+	let domain = window.location.origin
+	let href = window.location.href
+	let temp = await loadAppData(domain,href)
 	recursiveSortProperties(temp.template_params.ui)
 	let temp_ = JSON.parse(JSON.stringify({ ...temp }));
 	console.log("index load = ", temp_)
