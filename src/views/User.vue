@@ -4,14 +4,22 @@
 			<div class="ava-con">
 				<img class="ava" src="../assets/icons/user.png" mode=""></img>
 				<div class="ava-con-r">
-					<text class="userId">user-125482</text>
+					<text class="userId">{{ user_id }}</text>
 					<text class="address" v-if="account && account.length">
 						{{ account }}
 						<img class="copy" src="../assets/icons/copy.png" @click="handleCopy" mode="" />
 					</text>
 				</div>
 			</div>
-			<img @click="goToComplete" class="person-banner" src="../assets/images/personBanner.png" mode=""></img>
+			<!-- <div @click="goToLinkPage">关联账号</div> -->
+			<div class="group_2 flex-col">
+				<div class="image-wrapper_1 flex-row">
+					<img class="label_2" referrerpolicy="no-referrer" :src="item.lanhuimage0"
+						v-for="(item, index) in loopData0" :key="index" @click="setting_click(index)" />
+				</div>
+			</div>
+			<img v-if="task_group && task_group.length" @click="goToComplete" class="person-banner"
+				src="../assets/images/personBanner.png" mode=""></img>
 
 			<div class="myWork">
 				<text class="tit">My work</text>
@@ -20,6 +28,20 @@
 						<img :src="column.url" />
 					</div>
 				</div>
+				<!-- <VirtualWaterfall :items="columns" :gap="waterfallOption.gap"
+					:padding="waterfallOption.padding"
+					:preload-screen-count="[waterfallOption.topPreloadScreenCount, waterfallOption.bottomPreloadScreenCount]"
+					:item-min-width="waterfallOption.itemMinWidth" :max-column-count="waterfallOption.maxColumnCount"
+					:min-column-count="waterfallOption.minColumnCount" :calc-item-height="calcItemHeight_user_res">
+					<template #default="{ item }">
+						<div class="columns">
+							<div class="column-item">
+								<img :src="item.url" />
+							</div>
+						</div>
+					</template>
+</VirtualWaterfall> -->
+
 			</div>
 		</div>
 
@@ -34,19 +56,53 @@
 <script setup>
 import {
 	ref,
-	onMounted
+	onMounted,
+	toRaw
 } from 'vue';
-import { useRouter } from 'vue-router'
+import { useRouter ,useRoute} from 'vue-router'
 import { AI, User } from 'aonweb'
 import { showToast, showLoadingToast, closeToast } from 'vant';
 import bus from '../eventBus.js';
-import { loadAppData } from '../lib/loadApp'
+import { VirtualWaterfall } from '@lhlyu/vue-virtual-waterfall'
+import useWaterfall from '../components/useWaterfall.ts'
+
+const { backTop, waterfallOption, data, calcItemHeight, calcItemHeight_user_res } = useWaterfall()
+
+import { loadAppData, get_task_group } from '../lib/loadApp'
+
+
+const loopData0 = ref([
+	{
+		lanhuimage0:
+			'https://lanhu-oss.lanhuapp.com/MasterDDSSlicePNG2bca7c72324f15c434df75d8561b67b3.png',
+	},
+	{
+		lanhuimage0:
+			'https://lanhu-oss.lanhuapp.com/MasterDDSSlicePNG19c07e011b0d6494abe8a9b28f3d7c64.png',
+	},
+	{
+		lanhuimage0:
+			'https://lanhu-oss.lanhuapp.com/MasterDDSSlicePNGdef0a9ca06d4b9c88db80dd25953e38e.png',
+	},
+	{
+		lanhuimage0:
+			'https://lanhu-oss.lanhuapp.com/MasterDDSSlicePNG0dd2c1952f10abec8c126b36a382d715.png',
+	},
+])
+
 
 const router = useRouter()
+const route = useRoute()
 
 const account = ref('')
+
 const columns = ref([])
 const user_id = ref('')
+const task_group = ref([])
+
+// const server = ref('http://localhost:8088')
+const server = ref(null)
+
 
 const handleCopy = async () => {
 	try {
@@ -65,8 +121,37 @@ function goToCreate() {
 
 function goToComplete() {
 	router.push({
-		path: '/complete'
+		path: '/task-center'
 	})
+}
+
+function goToLinkPage() {
+	router.push({
+		path: '/link'
+	})
+}
+
+async function setting_click(index) {
+	if (index == 0) {
+		router.push({
+			path: '/asset'
+		})
+	}
+	if (index == 1) {
+		router.push({
+			path: '/ledger'
+		})
+	}
+	if (index == 2) {
+		router.push({
+			path: '/link'
+		})
+	}
+	if (index == 3) {
+		router.push({
+			path: '/setting'
+		})
+	}
 }
 
 async function mywork() {
@@ -74,11 +159,10 @@ async function mywork() {
 		let domain = window.location.origin
 		let href = window.location.href
 		let rawAppData = await loadAppData(domain,href)
-		// if (!rawAppData) {
-		// 	showToast("app config error")
-		// 	return
-		// }
-
+		if (!rawAppData) {
+			showToast("app config error")
+			return
+		}
 		const aonet = new AI({
 			app_key: (rawAppData && rawAppData.id) || import.meta.env.VITE_APPID,
 		})
@@ -152,7 +236,7 @@ async function login() {
 				return
 			}
 		}
-		user_id.value = 'user-' + getSubstring(temp.id)
+		// user_id.value = 'user-' + getSubstring(temp.id)
 		account.value = temp.profiles && temp.profiles.account
 		bus.emit('get_balance', "login");
 		console.log(`demo index login end time = ${new Date().getTime() - time}`)
@@ -177,9 +261,34 @@ function getSubstring(str) {
 	}
 }
 
+const get_userInfo = async () => {
+	let user = new User()
+	let login_user = await user.userinfo()
+	user_id.value = 'user-' + getSubstring(login_user.id)
+	if (login_user && login_user.profiles && login_user.profiles.username && login_user.profiles.username.length) {
+		user_id.value = login_user.profiles.username
+	}
+}
+
+const user_get_task_group = async () => {
+	let domain = window.location.origin
+	let href = window.location.href
+	let rawAppData = await loadAppData(domain,href)
+	if (!rawAppData) {
+		return
+	}
+	get_task_group().then(res => {
+		console.log("user user_get_task_group res = ", res)
+		task_group.value = res
+	}).catch(error => {
+		console.log("user user_get_task_group error = ", error)
+	})
+}
 
 onMounted(() => {
 	login()
+	user_get_task_group()
+	get_userInfo()
 })
 
 </script>
@@ -239,7 +348,7 @@ onMounted(() => {
 .person-banner {
 	width: 100%;
 	height: 100%;
-	margin: 9.6vw 0 0;
+	margin: 6vw 0 0;
 }
 
 .myWork {
@@ -317,6 +426,29 @@ button {
 	text-transform: none;
 }
 
+.group_2 {
+	background-image: linear-gradient(270deg,
+			rgba(62, 62, 62, 1) 0,
+			rgba(120, 120, 120, 1) 100%);
+	height: 14.94vw;
+	width: 100%;
+	margin: 6.4vw 0 0;
+	border-radius: 8px;
+
+	.image-wrapper_1 {
+		width: 67.2vw;
+		height: 6.4vw;
+		justify-content: space-between;
+		margin: 4.26vw 0 0 11.73vw;
+
+		.label_2 {
+			width: 6.4vw;
+			height: 6.4vw;
+			margin-right: 13.87vw;
+		}
+	}
+}
+
 @media screen and (min-width: 1024px) {
 	.ava-con {
 		margin-top: 32px;
@@ -361,7 +493,6 @@ button {
 		width: 100%;
 		margin-top: 30px;
 		padding-bottom: 75px;
-		min-height: 40vh;
 	}
 
 	.myWork .tit {
@@ -388,6 +519,25 @@ button {
 
 		border-radius: 4px;
 		font-size: 16px;
+	}
+
+	.group_2 {
+		height: 56px;
+		margin: 24px 0 0;
+		border-radius: 8px;
+
+		.image-wrapper_1 {
+			width: 252px;
+			height: 24px;
+			justify-content: space-between;
+			margin: 16px 0 0 44px;
+
+			.label_2 {
+				width: 24px;
+				height: 24px;
+				margin-right: 52px;
+			}
+		}
 	}
 }
 </style>

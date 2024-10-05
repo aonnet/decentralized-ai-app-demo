@@ -27,6 +27,16 @@ function extractSubdomainOrDomain(url) {
     return '';
   }
 
+  export async function get_session() {
+    console.log('get_session in')
+    const { data, error } = await supabase.auth.getSession()
+    console.log("get_session sss = ",data,error)
+    if (error) {
+        throw error
+    }
+    return data && data.session
+}
+
   export async function loadApp(domain,path) {
     console.log('loadApp in = ',domain,path)
 
@@ -284,5 +294,115 @@ export async function update_run_count() {
             app_key:appData.id,
             column:'run_count'
         })
+    }
+}
+
+export async function get_task_group() {
+    if (appData) {
+        let { data, error } = await supabase
+        .from('app_task_group')
+        .select('*')
+        .is('deleted_at',null)
+        .eq('app_key',appData.id)
+        console.log('get_task_group = ',data,error)
+        if (error) throw error
+        return data
+    }
+    return []
+}
+
+export async function update_user_name(username,id) {
+    const { data, error } = await supabase
+    .from('profiles')
+    .update({ username: username })
+    .eq('id', id)
+    .select()
+   if (error) throw error
+   return data
+}
+
+async function user_assets_total(user_id) {
+    let conditions = []
+    if (user_id) {
+        conditions.push({field:'user_id',value:user_id})
+    }
+    let data = await countDynamic('user_asset',conditions)
+    console.log('user_assets_total = ',data)
+    return data
+}
+
+export async function user_assets(page,size,user_id) {
+    let total = await user_assets_total(user_id)
+    if (total <= 0) {
+        return []
+    }
+    page = page ? page : 1
+    size = size ? size : 10
+    let offset = (page - 1) * size
+    size =  offset + size - 1
+    let select = supabase
+    .from("user_asset")
+    .select("*")
+    //可以添加其他查询条件
+    let {data,error} = await select.range(offset,size)
+    console.log('user_assets',data,error)
+   if (error) throw error
+   return {
+    total:total,
+    data:data
+   }
+}
+
+const countDynamic = async (tableName, conditions = []) => {
+    const { data, error } = await supabase
+      .rpc('count_dynamic', {
+        table_name: tableName,
+        conditions: conditions
+      })
+  
+    if (error) {
+      console.error('Error counting records:', error)
+      return
+    }
+  
+    console.log(`Count of records in ${tableName} with conditions ${JSON.stringify(conditions)}:`, data)
+    return data
+}
+
+async function ledger_total(user_id) {
+    let conditions = []
+    if (user_id) {
+        conditions.push({field:'user_id',value:user_id})
+    }
+    let data = await countDynamic('ledger',conditions)
+    console.log('ledger_total = ',data)
+    return data
+}
+
+export async function ledger(page,size,filter,user_id) {
+    let total = await ledger_total(user_id)
+    if (total <= 0) {
+        return []
+    }
+    page = page ? page : 1
+    size = size ? size : 10
+    let offset = (page - 1) * size
+    size =  offset + size - 1
+    console.log('ledger = ',page,size,offset)
+    let select = supabase
+    .from("ledger")
+    .select("*,asset(symbol)")
+    if (filter && filter.category) {
+        select = select.eq('category',filter.category)
+    }
+    //可以添加其他查询条件
+    let {data,error} = await select.range(offset,size)
+    console.log('ledger = ',data,error)
+    if (error) {
+        throw error
+    }
+    return {
+        total:total,
+        data:data
     }
 }

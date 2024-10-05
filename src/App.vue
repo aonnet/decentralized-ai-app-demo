@@ -10,15 +10,36 @@ import {
 } from 'vue';
 import QRCode from 'qrcode';
 
+const show_header = ref(true)
 const route = useRoute()
 const canvasRef = ref('')
 const is_pc = ref(false)
+const pages = ref([
+	'/ledger',
+	'/task-center',
+	'/link',
+	'/link-email',
+	'/link-error',
+	'/link-telegram',
+	'/setting',
+	'/asset',
+])
 
 const generateQRCode = (data, canvas) => {
 	data && QRCode.toCanvas(canvas, data, (error) => {
 		if (error) console.error(error);
 	});
 };
+watch(
+	() => route.path, // 获取当前路由的 path
+	(newPath, oldPath) => {
+		console.log('Route changed from', oldPath, 'to', newPath);
+		show_header.value = true
+		if (pages.value.indexOf(newPath) > -1) {
+			show_header.value = false
+		}
+	}
+);
 
 onMounted(() => {
 	if (window.innerWidth <= 1024) {
@@ -44,7 +65,7 @@ onMounted(() => {
 
 <template>
 	<div class="h5" v-if="!is_pc">
-		<Header></Header>
+		<Header v-if="show_header"></Header>
 
 		<RouterView />
 	</div>
@@ -65,7 +86,7 @@ onMounted(() => {
 				</div>
 
 				<div class="app_content">
-					<Header></Header>
+					<Header v-if="show_header"></Header>
 
 					<RouterView />
 				</div>
