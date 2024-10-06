@@ -63,10 +63,10 @@ import { useRouter ,useRoute} from 'vue-router'
 import { AI, User } from 'aonweb'
 import { showToast, showLoadingToast, closeToast } from 'vant';
 import bus from '../eventBus.js';
-import { VirtualWaterfall } from '@lhlyu/vue-virtual-waterfall'
-import useWaterfall from '../components/useWaterfall.ts'
+// import { VirtualWaterfall } from '@lhlyu/vue-virtual-waterfall'
+// import useWaterfall from '../components/useWaterfall.ts'
 
-const { backTop, waterfallOption, data, calcItemHeight, calcItemHeight_user_res } = useWaterfall()
+// const { backTop, waterfallOption, data, calcItemHeight, calcItemHeight_user_res } = useWaterfall()
 
 import { loadAppData, get_task_group } from '../lib/loadApp'
 

@@ -3,7 +3,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
-import VueDevTools from 'vite-plugin-vue-devtools'
+// import VueDevTools from 'vite-plugin-vue-devtools'
 import commonjs from 'vite-plugin-commonjs';
 
 
@@ -14,7 +14,7 @@ export default defineConfig({
     commonjs(),
     vue(),
     vueJsx(),
-    VueDevTools(),
+    // VueDevTools(),
   ],
   base: '/',
   resolve: {
