@@ -11,6 +11,7 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
+    "@lhlyu/vue-virtual-waterfall": "^1.0.6",
     "@supabase/supabase-js": "^2.45.1",
     "aonweb": "^2.0.3",
     "aos": "^2.3.4",
