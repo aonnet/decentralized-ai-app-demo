@@ -149,7 +149,7 @@ const task_group = ref([])
 const daily_tasks = ref([])
 const reward_tasks = ref([])
 const current_tasks = ref([])
-const task_host = ref('')
+const task_host = ref('https://task.iaon.ai')
 let selected_task = null
 
 async function back() {
