@@ -335,6 +335,12 @@ const formSubmit = async () => {
 		}
 		if (responseData && responseData.result) {
 			let url = responseData.result && responseData.result.length && responseData.result[0]
+			if (!(url && url.length) && Object.prototype.toString.call(responseData.result) === '[object Object]') {
+				console.log('这个变量是一个对象');
+				if (responseData.result.image) {
+					url = responseData.result.image
+				}
+			}
 			console.log('responseData.result = ', responseData.result)
 			goToComplete(url)
 		} else {
@@ -481,9 +487,28 @@ async function load() {
 }
 
 
-onMounted(() => {
+onMounted(async () => {
+	let sb_api_auth_token_backup = localStorage.getItem('sb_api_auth_token_backup')
+	if (sb_api_auth_token_backup) {
+		let session = JSON.parse(sb_api_auth_token_backup)
+		await save_session(session)
+		localStorage.removeItem('sb_api_auth_token_backup')
+	}
 	load()
 	login()
+	let error_code = route.query.error_code;
+	let error_description = route.query.error_description;
+	if (error_description && error_description.length && error_description.indexOf('+') > -1) {
+		error_description = decodeURIComponent(error_description && error_description.replace(/\+/g, ' '));
+	} 
+  	else if (error_code == 421) {
+    	error_description = 'Current user has already link Telegram'
+	} else if (error_code == 423) {
+    	error_description = 'Telegram account already been used'
+	}
+	if (error_description && error_description.length) {
+		showToast(error_description)
+	}
 })
 
 </script>

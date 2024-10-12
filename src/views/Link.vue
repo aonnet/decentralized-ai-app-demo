@@ -78,6 +78,8 @@ import {
 import { useRoute,useRouter } from 'vue-router'
 import {User} from 'aonweb'
 import { showToast, showLoadingToast, closeToast } from 'vant';
+import { save_session } from '../lib/loadApp'
+
 
 let loopData0 = ref([
         {
@@ -205,6 +207,9 @@ const deal_link = async (item) => {
 		forbidClick: true,
 		message: 'Loading...',
 	});
+  let sb_api_auth_token = localStorage.getItem('sb-api-auth-token')
+	localStorage.setItem('sb_api_auth_token_backup',sb_api_auth_token)
+
 	if (item.type == 'twitter') {
 		await linkTwitter()
 	}
@@ -356,23 +361,32 @@ const get_userInfo = async () => {
 	}
 }
 
-onMounted(() => {
+onMounted(async () => {
 	let temp = localStorage.getItem('loopData0')
 	console.log('onMounted loopData0 =',temp)
 	if (temp && temp.length) {
 		temp = JSON.parse(temp)
 		loopData0.value = temp
 	}
+  let sb_api_auth_token_backup = localStorage.getItem('sb_api_auth_token_backup')
+	if (sb_api_auth_token_backup) {
+		let session = JSON.parse(sb_api_auth_token_backup)
+		await save_session(session)
+		localStorage.removeItem('sb_api_auth_token_backup')
+	}
 	get_userInfo()
 	let error_code = route.query.error_code;
-	if (error_code == 422 || error_code == 400) {
-		let error_description = route.query.error_description;
+  let error_description = route.query.error_description;
+	if (error_description && error_description.length && error_description.indexOf('+') > -1) {
 		error_description = decodeURIComponent(error_description && error_description.replace(/\+/g, ' '));
-		showToast(error_description)
-	} else if (error_code == 421) {
-		showToast('Current user has already link Telegram')
+	} 
+  else if (error_code == 421) {
+    error_description = 'Current user has already link Telegram'
 	} else if (error_code == 423) {
-		showToast('Telegram account already been used')
+    error_description = 'Telegram account already been used'
+	}
+  if (error_description && error_description.length) {
+		showToast(error_description)
 	}
 })
 

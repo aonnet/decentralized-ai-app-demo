@@ -127,7 +127,7 @@
 </template>
 <script setup>
 import { ref, onMounted } from 'vue';
-import { loadAppData, get_task_group, get_session } from '../lib/loadApp'
+import { loadAppData, get_task_group, get_session,save_session } from '../lib/loadApp'
 import { showToast, showLoadingToast, closeToast } from 'vant';
 import moment from 'moment'
 import { User, supabase } from 'aonweb'
@@ -149,7 +149,7 @@ const task_group = ref([])
 const daily_tasks = ref([])
 const reward_tasks = ref([])
 const current_tasks = ref([])
-const task_host = ref('https://task.iaon.ai')
+const task_host = ref('')
 let selected_task = null
 
 async function back() {
@@ -158,6 +158,12 @@ async function back() {
 
 async function onClick_1(item) {
 	console.log('onClick_1 = ', item)
+	let sb_api_auth_token = localStorage.getItem('sb-api-auth-token')
+	// console.log('onClick_1 sb_api_auth_token = ',sb_api_auth_token)
+	localStorage.setItem('sb_api_auth_token_backup',sb_api_auth_token)
+	// let sb_api_auth_token_backup = localStorage.getItem('sb_api_auth_token_backup')
+	// console.log('onClick_1 sb_api_auth_token_backup = ',sb_api_auth_token_backup)
+
 	let session = await get_session()
 	if (!(session && session.access_token && session.access_token.length)) {
 		showToast('Please login first')
@@ -532,20 +538,36 @@ async function load() {
 	}
 }
 
-onMounted(() => {
+onMounted(async () => {
 	notShowTips.value = localStorage.getItem('notShowTips')
 	console.log('onMounted notShowTips', notShowTips)
+	let sb_api_auth_token_backup = localStorage.getItem('sb_api_auth_token_backup')
+	// console.log('onMounted notShowTips', notShowTips,sb_api_auth_token_backup)
+	if (sb_api_auth_token_backup) {
+		let session = JSON.parse(sb_api_auth_token_backup)
+		await save_session(session)
+		localStorage.removeItem('sb_api_auth_token_backup')
+		// localStorage.setItem('sb-api-auth-token',sb_api_auth_token_backup)
+		// let sb_api_auth_token = localStorage.getItem('sb-api-auth-token')
+
+		
+		// console.log('onMounted sb_api_auth_token', sb_api_auth_token)
+		// localStorage.removeItem('sb_api_auth_token_backup')
+	}
 	load()
 	console.log('onMounted route.query', route.query)
 	let error_code = route.query.error_code;
-	if (error_code == 422 || error_code == 400) {
-		let error_description = route.query.error_description;
+	let error_description = route.query.error_description;
+	if (error_description && error_description.length && error_description.indexOf('+') > -1) {
 		error_description = decodeURIComponent(error_description && error_description.replace(/\+/g, ' '));
-		showToast(error_description)
-	} else if (error_code == 421) {
-		showToast('Current user has already link Telegram')
+	} 
+  	else if (error_code == 421) {
+    	error_description = 'Current user has already link Telegram'
 	} else if (error_code == 423) {
-		showToast('Telegram account already been used')
+    	error_description = 'Telegram account already been used'
+	}
+	if (error_description && error_description.length) {
+		showToast(error_description)
 	}
 })
 </script>
