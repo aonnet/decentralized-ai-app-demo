@@ -638,6 +638,10 @@ input::placeholder {
 		border-bottom: 2px solid #36CFC9;
 	}
 
+	.van-popup--center {
+		top:35% !important
+	}
+
 	.tab-con .van-tab--active .van-tab__text--ellipsis {
 		border-bottom: 2px solid #43E8A0;
 	}

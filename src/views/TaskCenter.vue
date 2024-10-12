@@ -50,8 +50,25 @@
 							</button>
 						</div>
 					</div>
-					<div v-if="item.status === 'pending'" class="box_5 flex-col">
-						<div class="group_3 flex-row justify-between">
+					<div v-if="item.status === 'pending'" class="box_4 flex-col">
+						<div class="group_1 flex-row justify-between">
+							<div class="section_2 flex-row">
+								<div class="image-text_1 flex-row justify-between">
+									<img class="thumbnail_1" referrerpolicy="no-referrer"
+										src="https://lanhu.oss-cn-beijing.aliyuncs.com/MasterDDSSlicePNGbcd57f0c45b508ad281e49e6606f1b93.png" />
+									<span class="text-group_1">+{{ item.reward }}</span>
+								</div>
+							</div>
+							<span class="text_4">{{ item.start_time }}-{{ item.end_time }}</span>
+						</div>
+						<div class="group_2 flex-row justify-between">
+							<span class="text_5">{{ item.description }}</span>
+							<button class="button_2 flex-col" @click="onClick_1(item)">
+								<span class="text_9">Inspect</span>
+							</button>
+						</div>
+
+						<!-- <div class="group_3 flex-row justify-between">
 							<div class="block_1 flex-row">
 								<div class="image-text_2 flex-row justify-between">
 									<img class="thumbnail_2" referrerpolicy="no-referrer"
@@ -66,7 +83,7 @@
 							<button class="button_2 flex-col" @click="onClick_1(item)">
 								<span class="text_9">Inspect</span>
 							</button>
-						</div>
+						</div> -->
 					</div>
 					<div v-if="item.status === 'success'" class="box_6 flex-col">
 						<div class="box_7 flex-row justify-between">
@@ -926,6 +943,29 @@ onMounted(async () => {
 							line-height: 4.27vw;
 						}
 					}
+
+					.button_2 {
+						background-image: linear-gradient(180deg,
+								rgba(232, 210, 67, 1) 0,
+								rgba(138, 242, 95, 1) 100%);
+						border-radius: 80px;
+						height: 6.4vw;
+						border: 1px solid rgba(20, 20, 20, 1);
+						width: 19.2vw;
+
+						.text_9 {
+							width: 14.94vw;
+							height: 4.8vw;
+							overflow-wrap: break-word;
+							color: rgba(20, 20, 20, 1);
+							font-size: 3.73vw;
+							font-family: Roboto-Bold;
+							font-weight: 700;
+							text-align: center;
+							white-space: nowrap;
+							line-height: 4.27vw;
+						}
+					}
 				}
 			}
 
@@ -1432,6 +1472,29 @@ onMounted(async () => {
 							width: 72px;
 
 							.text_6 {
+								width: 56px;
+								height: 18px;
+								overflow-wrap: break-word;
+								color: rgba(20, 20, 20, 1);
+								font-size: 14px;
+								font-family: Roboto-Bold;
+								font-weight: 700;
+								text-align: center;
+								white-space: nowrap;
+								line-height: 16px;
+							}
+						}
+
+						.button_2 {
+							background-image: linear-gradient(180deg,
+									rgba(232, 210, 67, 1) 0,
+									rgba(138, 242, 95, 1) 100%);
+							border-radius: 80px;
+							height: 24px;
+							border: 1px solid rgba(20, 20, 20, 1);
+							width: 72px;
+
+							.text_9 {
 								width: 56px;
 								height: 18px;
 								overflow-wrap: break-word;
