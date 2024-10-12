@@ -115,7 +115,7 @@ import { useImageStore } from '@/store/imageStore';
 import 'vant/lib/index.css';
 import Loading from '../components/Loading.vue';
 import bus from '../eventBus.js';
-import { loadAppData, needLoadData, findKey, findParentKey, upload, update_run_count } from '../lib/loadApp'
+import { loadAppData, needLoadData, findKey, findParentKey, upload, update_run_count,save_session } from '../lib/loadApp'
 
 const router = useRouter()
 const imageStore = useImageStore();

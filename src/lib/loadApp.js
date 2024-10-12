@@ -37,6 +37,19 @@ function extractSubdomainOrDomain(url) {
     return data && data.session
 }
 
+export async function save_session(seesion) {
+    console.log('save_session in')
+    const { data, error } = await supabase.auth.setSession({
+        access_token:seesion.access_token,
+        refresh_token:seesion.refresh_token,
+    })
+    console.log("save_session sss = ",data,error)
+    if (error) {
+        throw error
+    }
+    return data && data.session
+}
+
   export async function loadApp(domain,path) {
     console.log('loadApp in = ',domain,path)
 
