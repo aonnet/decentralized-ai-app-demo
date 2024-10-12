@@ -385,6 +385,97 @@ button {
 	max-width: 77.33vw;
 }
 
+.uni-form-item .van-tabs__wrap {
+	margin-bottom: 6.4vw;
+}
+
+.uni-form-item .van-tabs__nav {
+	background: transparent;
+}
+
+.uni-form-item .van-tab--active {
+	color: #36CFC9;
+}
+
+.uni-form-item .van-tabs__line {
+	/* background: #36CFC9; */
+	/* width: 100%; */
+	display: none;
+	transform: translateX(85px) translateX(-50%);
+	transition-duration: 0.3s;
+}
+
+input:-internal-autofill-selected {
+	background-color: #3B3939 !important;
+}
+
+.van-tab__text--ellipsis {
+	padding-bottom: 2.67vw;
+	border-bottom: .53vw solid transparent;
+
+	font-family: Roboto-Regular;
+	font-weight: 400;
+	font-size: 3.73vw;
+	color: #FFFFFF;
+	text-align: center;
+	font-style: normal;
+	text-transform: none;
+
+}
+
+.van-tab--active .van-tab__text--ellipsis {
+	width: 100%;
+	text-align: center;
+	border-bottom: .53vw solid #36CFC9;
+	font-family: Roboto-Bold;
+	color: #36CFC9;
+}
+
+.tab-con .van-tab--active .van-tab__text--ellipsis {
+	width: 100%;
+	text-align: center;
+	border-bottom: .53vw solid #43E8A0;
+	font-family: Roboto-Bold;
+	color: #fff;
+}
+
+input::placeholder {
+	color: #fff !important;
+}
+
+.el-select__wrapper {
+	background-color: transparent;
+	box-shadow: none;
+	height: 14.93vw;
+	padding: 0;
+}
+
+.el-select__wrapper.is-focused,
+.el-select__wrapper.is-hovering:not(.is-focused) {
+	box-shadow: none;
+}
+
+.el-select__caret,
+.el-select__placeholder,
+.el-select-dropdown__item {
+	color: #fff;
+	;
+}
+
+.el-popper.is-light,
+.el-popper.is-light>.el-popper__arrow:before {
+	background: #3B3939;
+	border: none;
+}
+
+.el-select-dropdown__item.is-selected {
+	color: #36CFC9;
+}
+
+.el-select-dropdown__item.is-hovering {
+	background-color: transparent;
+}
+
 
 @media screen and (min-width: 1024px) {
 	.container {
@@ -530,6 +621,29 @@ button {
 	.content .van-uploader__file-name {
 		color: #fff;
 		max-width: 290px;
+	}
+
+	.uni-form-item .van-tabs__wrap {
+		margin-bottom: 24px;
+	}
+
+	.van-tab__text--ellipsis {
+		padding-bottom: 10px;
+		border-bottom: 2px solid transparent;
+		font-size: 14px;
+
+	}
+
+	.van-tab--active .van-tab__text--ellipsis {
+		border-bottom: 2px solid #36CFC9;
+	}
+
+	.tab-con .van-tab--active .van-tab__text--ellipsis {
+		border-bottom: 2px solid #43E8A0;
+	}
+
+	.el-select__wrapper {
+		height: 48px;
 	}
 }
 </style>
