@@ -207,8 +207,6 @@ const deal_link = async (item) => {
 		forbidClick: true,
 		message: 'Loading...',
 	});
-  let sb_api_auth_token = localStorage.getItem('sb-api-auth-token')
-	localStorage.setItem('sb_api_auth_token_backup',sb_api_auth_token)
 
 	if (item.type == 'twitter') {
 		await linkTwitter()
@@ -236,6 +234,8 @@ const linkTwitter = async () => {
             showToast('Twitter already link')
             return
         }
+        // let sb_api_auth_token = localStorage.getItem('sb-api-auth-token')
+	      // localStorage.setItem('sb_api_auth_token_backup',sb_api_auth_token)
         let data = await user.linkTwitter(window.location.href)
         console.log('linkTwitter data = ',data)
 		// get_userInfo()
@@ -315,6 +315,8 @@ const linkGithub = async () => {
             showToast('Github already link')
             return
         }
+        // let sb_api_auth_token = localStorage.getItem('sb-api-auth-token')
+	      // localStorage.setItem('sb_api_auth_token_backup',sb_api_auth_token)
         let data = await user.linkGithub(window.location.href)
         console.log('linkGithub data = ',data)
 		get_userInfo()
@@ -368,12 +370,16 @@ onMounted(async () => {
 		temp = JSON.parse(temp)
 		loopData0.value = temp
 	}
-  let sb_api_auth_token_backup = localStorage.getItem('sb_api_auth_token_backup')
-	if (sb_api_auth_token_backup) {
-		let session = JSON.parse(sb_api_auth_token_backup)
-		await save_session(session)
-		localStorage.removeItem('sb_api_auth_token_backup')
-	}
+  // let sb_api_auth_token_backup = localStorage.getItem('sb_api_auth_token_backup')
+  // let sb_api_auth_token = localStorage.getItem('sb-api-auth-token')
+
+	// if (sb_api_auth_token_backup && !sb_api_auth_token) {
+	// 	let session = JSON.parse(sb_api_auth_token_backup)
+	// 	await save_session(session)
+	// }
+  // if (sb_api_auth_token_backup) {
+	// 	localStorage.removeItem('sb_api_auth_token_backup')
+	// }
 	get_userInfo()
 	let error_code = route.query.error_code;
   let error_description = route.query.error_description;

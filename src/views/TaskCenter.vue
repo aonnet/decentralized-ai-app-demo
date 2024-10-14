@@ -175,9 +175,9 @@ async function back() {
 
 async function onClick_1(item) {
 	console.log('onClick_1 = ', item)
-	let sb_api_auth_token = localStorage.getItem('sb-api-auth-token')
-	// console.log('onClick_1 sb_api_auth_token = ',sb_api_auth_token)
-	localStorage.setItem('sb_api_auth_token_backup',sb_api_auth_token)
+	// let sb_api_auth_token = localStorage.getItem('sb-api-auth-token')
+	// // console.log('onClick_1 sb_api_auth_token = ',sb_api_auth_token)
+	// localStorage.setItem('sb_api_auth_token_backup',sb_api_auth_token)
 	// let sb_api_auth_token_backup = localStorage.getItem('sb_api_auth_token_backup')
 	// console.log('onClick_1 sb_api_auth_token_backup = ',sb_api_auth_token_backup)
 
@@ -270,15 +270,20 @@ async function onClick_1(item) {
 			return
 		}
 	}
+	// let sb_api_auth_token_backup = localStorage.getItem('sb_api_auth_token_backup')
+	// if (sb_api_auth_token_backup) {
+	// 	localStorage.removeItem('sb_api_auth_token_backup')
+	// }
 
 	selected_task = item
 	console.log('notShowTips', notShowTips)
-	if (notShowTips.value) {
+	if (notShowTips.value && notShowTips.value !== 'null') {
 		if (item.status == 'todo' || item.status == 'retry') {
 			let flag = await sumit_task(selected_task)
 			console.log('sumit_task back = ', flag)
 			if (flag) {
-				window.location.href = item.url
+				// window.location.href = item.url
+				window.open(item.url + '?screen_name=iaon', 'test', 'width=800,height=600,left=200,top=200')
 			}
 			return
 		}
@@ -298,7 +303,10 @@ async function onClick_1(item) {
 }
 async function submitTask() {
 	console.log('submitTask = ', selected_task, selected_task.url)
-	localStorage.setItem('notShowTips', notShowTips.value)
+	if (notShowTips.value) {
+		localStorage.setItem('notShowTips', notShowTips.value)
+	}
+	
 	if (!selected_task) {
 		return
 	}
@@ -306,7 +314,8 @@ async function submitTask() {
 		let flag = await sumit_task(selected_task)
 		console.log('submitTask sumit_task back = ', flag, selected_task.url)
 		if (flag) {
-			window.location.href = selected_task.url
+			// window.location.href = selected_task.url
+			window.open(selected_task.url + '?screen_name=iaon', 'test', 'width=800,height=600,left=200,top=200')
 		}
 		return
 	}
@@ -513,6 +522,10 @@ async function task_detail(task_center_host) {
 			if (task.daily) {
 				temp_daily_tasks.push(task)
 			} else {
+				if (m == 2) {
+					task.status = 'pending'
+				}
+				
 				temp_reward_tasks.push(task)
 			}
 		}
@@ -556,21 +569,26 @@ async function load() {
 }
 
 onMounted(async () => {
-	notShowTips.value = localStorage.getItem('notShowTips')
-	console.log('onMounted notShowTips', notShowTips)
-	let sb_api_auth_token_backup = localStorage.getItem('sb_api_auth_token_backup')
-	// console.log('onMounted notShowTips', notShowTips,sb_api_auth_token_backup)
-	if (sb_api_auth_token_backup) {
-		let session = JSON.parse(sb_api_auth_token_backup)
-		await save_session(session)
-		localStorage.removeItem('sb_api_auth_token_backup')
-		// localStorage.setItem('sb-api-auth-token',sb_api_auth_token_backup)
-		// let sb_api_auth_token = localStorage.getItem('sb-api-auth-token')
-
-		
-		// console.log('onMounted sb_api_auth_token', sb_api_auth_token)
-		// localStorage.removeItem('sb_api_auth_token_backup')
+	let temp = localStorage.getItem('notShowTips')
+	console.log('onMounted notShowTips temp', temp)
+	if (temp == 'null') {
+		temp = false
 	}
+	notShowTips.value = temp
+	if (typeof notShowTips.value == 'string') {
+		notShowTips.value = Boolean(notShowTips.value)
+	}
+	console.log('onMounted notShowTips', notShowTips)
+	// let sb_api_auth_token_backup = localStorage.getItem('sb_api_auth_token_backup')
+	// // console.log('onMounted notShowTips', notShowTips,sb_api_auth_token_backup)
+	// let sb_api_auth_token = localStorage.getItem('sb-api-auth-token')
+	// if (sb_api_auth_token_backup && !sb_api_auth_token) {
+	// 	let session = JSON.parse(sb_api_auth_token_backup)
+	// 	await save_session(session)
+	// }
+	// if (sb_api_auth_token_backup) {
+	// 	localStorage.removeItem('sb_api_auth_token_backup')
+	// }
 	load()
 	console.log('onMounted route.query', route.query)
 	let error_code = route.query.error_code;
@@ -1165,8 +1183,8 @@ onMounted(async () => {
 			position: absolute;
 			top: 0;
 			left: 0;
-			width: 100vw;
-			height: 80vh;
+			width: 375px;
+			height: 691px;
 			background: rgba(20, 20, 20, 0.93);
 			display: flex;
 			align-items: center;
@@ -1514,6 +1532,7 @@ onMounted(async () => {
 					background-color: rgba(61, 61, 61, 1);
 					border-radius: 8px;
 					height: 108px;
+					width: 100%;
 					border: 1px solid rgba(67, 232, 160, 1);
 					margin-top: 24px;
 
@@ -1521,6 +1540,7 @@ onMounted(async () => {
 						background-color: rgba(85, 79, 79, 1);
 						border-radius: 8px 8px 0px 0px;
 						height: 32px;
+						width: 100%;
 						border: 1px solid rgba(67, 232, 160, 1);
 
 						.block_1 {

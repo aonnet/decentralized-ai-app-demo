@@ -13,16 +13,16 @@
       <span class="text_3">password</span>
       <div class="section_2 flex-row">
         <div class="image-text_1 flex-row justify-between">
-          <input class="text-group_1" v-model="password" placeholder="6-16 characters,letters and numbers" />
-          <img class="image_1" referrerpolicy="no-referrer"
+          <input class="text-group_1" :type="passwrod_type" v-model="password" placeholder="6-16 characters,letters and numbers" />
+          <img class="image_1" referrerpolicy="no-referrer" @click="show_password"
             src="https://lanhu-oss.lanhuapp.com/MasterDDSSlicePNG6228e483eafc214b659785bb7b48fcce.png" />
         </div>
       </div>
       <span class="text_4">Repeat&nbsp;password</span>
       <div class="section_3 flex-row">
         <div class="image-text_2 flex-row justify-between">
-          <input class="text-group_2" v-model="comfirm_password" placeholder="Enter your password again" />
-          <img class="image_2" referrerpolicy="no-referrer"
+          <input class="text-group_2" :type="repet_passwrod_type" v-model="comfirm_password" placeholder="Enter your password again" />
+          <img class="image_2" referrerpolicy="no-referrer" @click="show_repet_password"
             src="https://lanhu-oss.lanhuapp.com/MasterDDSSlicePNG6228e483eafc214b659785bb7b48fcce.png" />
         </div>
       </div>
@@ -71,6 +71,8 @@ const password = ref('')
 const comfirm_password = ref('')
 const op_code = ref('')
 const success = ref(false)
+const passwrod_type = ref('password')
+const repet_passwrod_type = ref('password')
 
 const is_get_opt_code = ref(false)
 
@@ -80,6 +82,22 @@ const back = () => {
 
 const finish = () => {
   router.back();
+}
+
+const show_password = () => {
+  if (passwrod_type.value == 'password') {
+    passwrod_type.value = 'text'
+  } else if (passwrod_type.value == 'text') {
+    passwrod_type.value = 'password'
+  }
+}
+
+const show_repet_password = () => {
+  if (repet_passwrod_type.value == 'password') {
+    repet_passwrod_type.value = 'text'
+  } else if (repet_passwrod_type.value == 'text') {
+    repet_passwrod_type.value = 'password'
+  }
 }
 
 
@@ -168,6 +186,7 @@ const linkEmail = async () => {
     // showToast('email link success')
     success.value = true
   } else {
+    closeToast()
     showToast('email link failed')
   }
 }
@@ -506,11 +525,11 @@ button {
 
 @media screen and (min-width: 1024px) {
   .page {
-  background-color: rgba(20, 20, 20, 1);
-  position: relative;
-  width: 375px;
-  height: 195.74vw;
-  overflow: hidden;
+  /* background-color: rgba(20, 20, 20, 1); */
+  /* position: relative; */
+  width: 100%;
+  /* height: 195.74vw; */
+  /* overflow: hidden; */
 
   .section_1 {
     width: 300px;
@@ -696,13 +715,13 @@ button {
     top: 0;
 
     .image-wrapper_1 {
-      width: 100vw;
-      height: 51.74vw;
+      width: 375px;
+      height: 691px;
 
       .label_2 {
         width: 24px;
         height: 24px;
-        margin: 157px 0 0 332px;
+        margin: 100px 0 0 332px;
       }
     }
 
@@ -714,14 +733,15 @@ button {
       );
       position: absolute;
       left: 20px;
-      top: 51.47vw;
+      top: 135px;
       width: 336px;
-      height: 62.4px;
+      height: 235px;
       border: 1px solid rgba(112, 112, 112, 1);
+      border-radius: 24px;
 
       .text_8 {
         width: 288px;
-        height: 44px;
+        height:auto;
         overflow-wrap: break-word;
         color: rgba(255, 255, 255, 1);
         font-size: 14px;
@@ -742,7 +762,7 @@ button {
         height: 34px;
         border: 1px solid rgba(20, 20, 20, 1);
         width: 288px;
-        margin: 34px 0 24px 24px;
+        margin: auto 0 auto 24px;
 
         .text_9 {
           width: 41px;
@@ -755,14 +775,14 @@ button {
           text-align: center;
           white-space: nowrap;
           line-height: 24px;
-          margin: 4px 0 0 80px;
+          margin: 4px auto;
         }
       }
 
       .image_1 {
         position: absolute;
         left: 109px;
-        top: -16px;
+        top: -60px;
         width: 120px;
         height: 120px;
       }

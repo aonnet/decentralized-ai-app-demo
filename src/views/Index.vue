@@ -488,12 +488,16 @@ async function load() {
 
 
 onMounted(async () => {
-	let sb_api_auth_token_backup = localStorage.getItem('sb_api_auth_token_backup')
-	if (sb_api_auth_token_backup) {
-		let session = JSON.parse(sb_api_auth_token_backup)
-		await save_session(session)
-		localStorage.removeItem('sb_api_auth_token_backup')
-	}
+	// let sb_api_auth_token_backup = localStorage.getItem('sb_api_auth_token_backup')
+	// let sb_api_auth_token = localStorage.getItem('sb-api-auth-token')
+
+	// if (sb_api_auth_token_backup && !sb_api_auth_token) {
+	// 	let session = JSON.parse(sb_api_auth_token_backup)
+	// 	await save_session(session)
+	// }
+	// if (sb_api_auth_token_backup) {
+	// 	localStorage.removeItem('sb_api_auth_token_backup')
+	// }
 	load()
 	login()
 	let error_code = route.query.error_code;
