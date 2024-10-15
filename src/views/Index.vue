@@ -106,7 +106,7 @@
 <script setup>
 import { ref, onMounted, toRaw } from 'vue';
 import { showToast, showLoadingToast, closeToast } from 'vant';
-import { useRouter } from 'vue-router'
+import { useRouter,useRoute } from 'vue-router'
 
 import { AI, AIOptions, User } from 'aonweb'
 import { getTemplate } from '../lib/getTemplate'
@@ -118,6 +118,7 @@ import bus from '../eventBus.js';
 import { loadAppData, needLoadData, findKey, findParentKey, upload, update_run_count,save_session } from '../lib/loadApp'
 
 const router = useRouter()
+const route = useRoute()
 const imageStore = useImageStore();
 
 const showLoading = ref(false);
