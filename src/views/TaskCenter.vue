@@ -283,7 +283,7 @@ async function onClick_1(item) {
 			console.log('sumit_task back = ', flag)
 			if (flag) {
 				// window.location.href = item.url
-				window.open(item.url + '?screen_name=iaon', 'test', 'width=800,height=600,left=200,top=200')
+				window.open(item.url, 'test', 'width=800,height=600,left=200,top=200')
 			}
 			return
 		}
@@ -315,7 +315,7 @@ async function submitTask() {
 		console.log('submitTask sumit_task back = ', flag, selected_task.url)
 		if (flag) {
 			// window.location.href = selected_task.url
-			window.open(selected_task.url + '?screen_name=iaon', 'test', 'width=800,height=600,left=200,top=200')
+			window.open(selected_task.url, 'test', 'width=800,height=600,left=200,top=200')
 		}
 		return
 	}
@@ -522,10 +522,6 @@ async function task_detail(task_center_host) {
 			if (task.daily) {
 				temp_daily_tasks.push(task)
 			} else {
-				if (m == 2) {
-					task.status = 'pending'
-				}
-				
 				temp_reward_tasks.push(task)
 			}
 		}
