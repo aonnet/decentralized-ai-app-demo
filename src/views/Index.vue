@@ -225,11 +225,12 @@ const formSubmit = async () => {
 		return
 	}
 	if (!imageStore.uploadedImageUrl) {
-		showError.value = true
+		showToast("Please upload a image")
+		// showError.value = true
 
-		setTimeout(() => {
-			showError.value = false
-		}, 3000)
+		// setTimeout(() => {
+		// 	showError.value = false
+		// }, 3000)
 		return
 	}
 
